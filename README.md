@@ -18,6 +18,11 @@ https://docs.microsoft.com/en-us/powershell/scripting/dsc/reference/resources/wi
 
 https://markgossa.blogspot.com/2017/08/learn-powershell-dsc-part-1.html
 
+- https://github.com/dsccommunity/ComputerManagementDsc
+    ```powershell
+    Find-Module -Name ComputerManagementDsc -Repository PSGallery | Install-Module
+    ```
+
 
 ## Aspects of the Windows environment I want to manage declaratively:
 -   Install Wireguard
@@ -48,4 +53,6 @@ https://markgossa.blogspot.com/2017/08/learn-powershell-dsc-part-1.html
 -   AutoHotKey Custom Keyboard Shortcuts
     -   Clipboard AutoTyper
 -   Task Scheduler
+    -   Delete old Downloads
     -   Facelog
+    -   Auto chocolatey udpate?
