@@ -3,6 +3,11 @@
 
 ## Notes:
 
+### Set-ExecutionPolicy
+```powershell
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope LocalMachine
+```
+
 ### https://stackoverflow.com/questions/573817/where-are-environment-variables-stored-in-registry
     HKEY_CURRENT_USER\Environment
     HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Session Manager\Environment
