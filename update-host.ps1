@@ -18,7 +18,7 @@ git -C "${REPO}" rebase --autostash origin/master
 choco install `
     --confirm `
     --limit-output `
-    "${REPO}/chocolaty/packages.config"
+    "${REPO}/chocolatey/packages.config"
 
 Register-ScheduledTask `
     -TaskName "Update Host" `
