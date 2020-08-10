@@ -24,3 +24,6 @@ Register-ScheduledTask `
     -TaskName "Host - Update" `
     -Xml (get-content "${REPO}/scheduled-tasks/update-host.xml" | out-string) `
     -Force
+
+& "${REPO}/DSC-play/deploy.ps1"
+

@@ -1,13 +1,14 @@
 
 Set-StrictMode -Version 3
 
+
+Set-Location "${PSScriptRoot}"
+
 Install-Module -Name ComputerManagementDsc
 
 Start-Service WinRM
 
 . ./DSC-Configuration1.ps1
-
-# Set-Location "C:\DSC\"
 
 Configuration1
 
