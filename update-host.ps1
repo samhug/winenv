@@ -21,6 +21,6 @@ choco install `
     "${REPO}/chocolatey/packages.config"
 
 Register-ScheduledTask `
-    -TaskName "Update Host" `
+    -TaskName "Host - Update" `
     -Xml (get-content "${REPO}/scheduled-tasks/update-host.xml" | out-string) `
     -Force
