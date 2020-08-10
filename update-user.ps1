@@ -20,3 +20,5 @@ Register-ScheduledTask `
     -Force
 
 
+# Update Rust Toolchains
+rustup update --no-self-update
