@@ -1,8 +1,10 @@
+#requires -RunAsAdministrator
+
 Set-StrictMode -Version 3
 
 $REPO = (git -C "${PSScriptRoot}" rev-parse --show-toplevel)
 
-# Write-Host $REPO
+Write-Host $REPO
 
 git -C "${REPO}" fetch origin master
 git -C "${REPO}" rebase --autostash origin/master
@@ -18,3 +20,7 @@ choco install `
     --limit-output `
     "${REPO}/chocolaty/packages.config"
 
+Register-ScheduledTask `
+    -TaskName "Update Host" `
+    -Xml (get-content "${REPO}/scheduled-tasks/update-host.xml" | out-string) `
+    -Force
