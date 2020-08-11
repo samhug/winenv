@@ -1,11 +1,9 @@
-use std::collections::HashMap;
-
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Deserialize)]
 pub struct Config {
-    pub filesystem: HashMap<String, FilesystemDecl>,
-    pub registry: HashMap<String, RegistryDecl>,
+    pub filesystem: Vec<FilesystemDecl>,
+    pub registry: Vec<RegistryDecl>,
     pub activationHooks: Vec<ActivationHookDecl>,
 }
 
@@ -18,6 +16,7 @@ pub enum Ensure {
 #[derive(Debug, Deserialize)]
 pub struct FilesystemDecl {
     pub ensure: Ensure,
+    pub path: String,
     pub name: String,
     pub text: Option<String>,
 }
@@ -31,7 +30,8 @@ pub enum RegistryValueType {
 #[derive(Debug, Deserialize)]
 pub struct RegistryDecl {
     pub ensure: Ensure,
-    pub name: String,
+    pub path: String,
+    pub name: Option<String>,
     #[serde(rename = "type")]
     pub valueType: Option<RegistryValueType>,
     pub value: Option<String>,

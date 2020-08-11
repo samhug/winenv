@@ -1,39 +1,46 @@
 {
-  "registry": {
-    "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\TimeZoneInformation": {
+  "registry": [
+    {
       "ensure": "Present",
+      "path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\TimeZoneInformation",
       "name": "RealTimeIsUniversal",
       "type": "Qword",
       "value": "00000001"
     },
-    "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\MyComputer\\NameSpace\\{1CF1260C-4DD0-4ebb-811F-33C572699FDE}": {
+    {
       "ensure": "Absent",
-      "name": ""
+      "path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\MyComputer\\NameSpace\\{1CF1260C-4DD0-4ebb-811F-33C572699FDE}"
     }
-  },
-  "filesystem": {
-    "c:/windows/system32/drivers/etc": {
+  ],
+  "filesystem": [
+    {
       "ensure": "Present",
+      "path": "c:/windows/system32/drivers/etc",
       "name": "hosts",
       "text": "0.0.0.0    www.facebook.com"
     },
-    "c:/ProgramData/decwinc/store": {
+    {
       "ensure": "Present",
+      "path": "c:/ProgramData/decwinc/store",
       "name": "xxxxxxxxxxxxxxxxxxxxxxxx-activation-hook.ps1",
       "text": "Register-ScheduledTask -TaskName \"User - Update\" -Xml (get-content \"${REPO}/scheduled-tasks/update-user.xml\" | out-string) -Force"
     }
-  },
+  ],
   "activationHooks": [
+    {
+      "command": "cmd",
+      "args": [ "/C", "echo hello"]
+    },
+    {
+      "command": "powershell.exe",
+      "args": [ "-Command", "Write-Host 'hello'"]
+    },
     {
       "command": "powershell.exe",
       "args": [
         "-File",
         "c:/ProgramData/decwinc/store/xxxxxxxxxxxxxxxxxxxxxxxx-activation-hook.ps1"
       ]
-    },
-    {
-      "command": "",
-      "args": []
     }
   ]
 }

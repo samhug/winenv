@@ -41,7 +41,49 @@ fn parse_config(path: &Path) -> Result<config::Config, String> {
 }
 
 fn instantiate_config(cfg: &config::Config) -> Result<(), &str> {
-    println!("parsed config:\n{:#?}", cfg);
+    // println!("parsed config:\n{:#?}", cfg);
 
-    Err("unimplimented")
+    for fs_decl in &cfg.filesystem {
+        println!("{:#?}", fs_decl);
+        match fs_decl.ensure {
+            config::Ensure::Absent => {
+                unimplemented!();
+            },
+            config::Ensure::Present => {
+                unimplemented!();
+
+                // let path = std::path::PathBuf::from(fs_decl.path);
+                // path.push(fs_decl.name);
+                
+                // let mut file = File::create(&path)?;
+                // file.write_all(fs_decl.text)?;
+            },
+        }
+    }
+
+    for reg_decl in &cfg.registry {
+        println!("{:#?}", reg_decl);
+        match reg_decl.ensure {
+            config::Ensure::Absent => {
+                unimplemented!();
+            },
+            config::Ensure::Present => {
+                unimplemented!();
+            },
+        }
+    }
+
+
+    for ah_decl in &cfg.activationHooks {
+        let output = std::process::Command::new(&ah_decl.command)
+            .args(&ah_decl.args[..])
+            .output()
+            .expect("failed to execute process");
+
+        println!("{}",  std::str::from_utf8(&output.stdout).unwrap());
+        // println!("{:#?}", ah_decl);
+    }
+
+    // Err("unimplemented")
+    Ok(())
 }
