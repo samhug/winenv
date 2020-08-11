@@ -44,7 +44,10 @@ fn instantiate_config(cfg: &config::Config) -> Result<(), String> {
     // println!("parsed config:\n{:#?}", cfg);
 
     for fs_decl in &cfg.filesystem {
-        println!("[filesystem_declaration] {:?} {:?}", &fs_decl.path, fs_decl.name);
+        println!(
+            "[filesystem_declaration] {:?} {:?}",
+            &fs_decl.path, fs_decl.name
+        );
 
         match fs_decl.ensure {
             config::Ensure::Absent => {
@@ -94,7 +97,11 @@ fn instantiate_config(cfg: &config::Config) -> Result<(), String> {
         if output.status.success() {
             println!("SUCCESS: {}", std::str::from_utf8(&output.stdout).unwrap());
         } else {
-            eprintln!("FAILURE: {}", std::str::from_utf8(&output.stdout).unwrap());
+            eprintln!(
+                "FAILURE: {}\n{}",
+                std::str::from_utf8(&output.stdout).unwrap(),
+                std::str::from_utf8(&output.stderr).unwrap()
+            );
             return Err("activation_hook failed".to_string());
         }
     }

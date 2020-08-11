@@ -1,13 +1,13 @@
 
--- let Prelude =
---       https://prelude.dhall-lang.org/v11.1.0/package.dhall sha256:99462c205117931c0919f155a6046aec140c70fb8876d208c7c77027ab19c2fa
+let Prelude =
+      https://prelude.dhall-lang.org/v17.1.0/package.dhall sha256:10db3c919c25e9046833df897a8ffe2701dc390fa0893d958c3430524be5a43e
 
 -- let RegistryKeyType = < `dword` | `qword` >
 
 
--- let context = {
---   storePath = "c:/ProgramData/decwinc/store"
--- }
+let context = {
+  storePath = "c:/ProgramData/decwinc/store",
+}
 
 -- let Module = { type : Text, config : Text, age : Natural }
 
@@ -22,7 +22,7 @@
 --     a = "hello"
 -- }
 
-{
+in {
 
   registry = [
 --     {
@@ -47,13 +47,13 @@
     },
     {
       ensure = "Present",
-      path = "c:/ProgramData/decwinc/store",
+      path = "${context.storePath}",
       name = "xxxxxxxxxxxxxxxxxxxxxxxx-activation-hook.ps1",
       text = "Write-Host 'Hello from ps1 file'",
     },
     {
       ensure = "Present",
-      path = "c:/ProgramData/decwinc/store",
+      path = "${context.storePath}",
       name = "xxxxxxxxxxxxxxxxxxxxxxxx-chocolatey-packages.config",
       text =
         ''
@@ -68,7 +68,7 @@
             <package id="python" />
             <package id="qemu" />
             <package id="ripgrep" />
-            <package id="rustup" />
+            <package id="rustup.install" />
             <package id="starship" />
             <package id="sudo" />
             <package id="sysinternals" />
@@ -105,7 +105,7 @@
       command = "powershell.exe",
       args = [
         "-File",
-        "c:/ProgramData/decwinc/store/xxxxxxxxxxxxxxxxxxxxxxxx-activation-hook.ps1"
+        "${context.storePath}/xxxxxxxxxxxxxxxxxxxxxxxx-activation-hook.ps1"
       ],
     },
     {
@@ -113,7 +113,7 @@
       args = [
         "install",
         "--confirm",
-        "c:/ProgramData/decwinc/store/xxxxxxxxxxxxxxxxxxxxxxxx-chocolatey-packages.config"
+        "${context.storePath}/xxxxxxxxxxxxxxxxxxxxxxxx-chocolatey-packages.config"
       ],
     }
   ]
