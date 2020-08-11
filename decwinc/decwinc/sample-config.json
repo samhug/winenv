@@ -1,0 +1,39 @@
+{
+  "registry": {
+    "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\TimeZoneInformation": {
+      "ensure": "Present",
+      "name": "RealTimeIsUniversal",
+      "type": "Qword",
+      "value": "00000001"
+    },
+    "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\MyComputer\\NameSpace\\{1CF1260C-4DD0-4ebb-811F-33C572699FDE}": {
+      "ensure": "Absent",
+      "name": ""
+    }
+  },
+  "filesystem": {
+    "c:/windows/system32/drivers/etc": {
+      "ensure": "Present",
+      "name": "hosts",
+      "text": "0.0.0.0    www.facebook.com"
+    },
+    "c:/ProgramData/decwinc/store": {
+      "ensure": "Present",
+      "name": "xxxxxxxxxxxxxxxxxxxxxxxx-activation-hook.ps1",
+      "text": "Register-ScheduledTask -TaskName \"User - Update\" -Xml (get-content \"${REPO}/scheduled-tasks/update-user.xml\" | out-string) -Force"
+    }
+  },
+  "activationHooks": [
+    {
+      "command": "powershell.exe",
+      "args": [
+        "-File",
+        "c:/ProgramData/decwinc/store/xxxxxxxxxxxxxxxxxxxxxxxx-activation-hook.ps1"
+      ]
+    },
+    {
+      "command": "",
+      "args": []
+    }
+  ]
+}
