@@ -1,10 +1,11 @@
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
 
 #[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct Config {
     pub filesystem: Vec<FilesystemDecl>,
     pub registry: Vec<RegistryDecl>,
-    pub activationHooks: Vec<ActivationHookDecl>,
+    pub activation_hooks: Vec<ActivationHookDecl>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -33,7 +34,7 @@ pub struct RegistryDecl {
     pub path: String,
     pub name: Option<String>,
     #[serde(rename = "type")]
-    pub valueType: Option<RegistryValueType>,
+    pub value_type: Option<RegistryValueType>,
     pub value: Option<String>,
 }
 

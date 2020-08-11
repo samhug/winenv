@@ -1,1 +1,0 @@
-let RegistryKeyType = < `dword` | `qword` >
