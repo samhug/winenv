@@ -17,7 +17,14 @@
     {
       "args": [
         "-File",
-        "c:/ProgramData/decwinc/store/xxxxxxxxxxxxxxxxxxxxxxxx-activation-hook.ps1"
+        "c:/ProgramData/decwinc/store/activation-hook.ps1"
+      ],
+      "command": "powershell.exe"
+    },
+    {
+      "args": [
+        "-Command",
+        "Register-ScheduledTask -TaskName 'DecWinC - Host Updater' -Xml (get-content 'c:/ProgramData/decwinc/store/scheduled_task-hostupdater.xml' | out-string) -Force"
       ],
       "command": "powershell.exe"
     },
@@ -25,7 +32,7 @@
       "args": [
         "install",
         "--confirm",
-        "c:/ProgramData/decwinc/store/xxxxxxxxxxxxxxxxxxxxxxxx-chocolatey-packages.config"
+        "c:/ProgramData/decwinc/store/chocolatey-packages.config"
       ],
       "command": "choco"
     }
@@ -39,15 +46,27 @@
     },
     {
       "ensure": "Present",
-      "name": "xxxxxxxxxxxxxxxxxxxxxxxx-activation-hook.ps1",
+      "name": "activation-hook.ps1",
       "path": "c:/ProgramData/decwinc/store",
       "text": "Write-Host 'Hello from ps1 file'"
     },
     {
       "ensure": "Present",
-      "name": "xxxxxxxxxxxxxxxxxxxxxxxx-chocolatey-packages.config",
+      "name": "chocolatey-packages.config",
       "path": "c:/ProgramData/decwinc/store",
       "text": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<packages>\n    <package id=\"7zip\" />\n    <package id=\"curl\" />\n    <package id=\"git\" />\n    <package id=\"keepass\" />\n    <package id=\"nmap\" />\n    <package id=\"openssh\" />\n    <package id=\"python\" />\n    <package id=\"qemu\" />\n    <package id=\"ripgrep\" />\n    <package id=\"rustup.install\" />\n    <package id=\"starship\" />\n    <package id=\"sudo\" />\n    <package id=\"sysinternals\" />\n    <package id=\"vlc\" />\n    <!-- <package id=\"vscode\" /> -->\n    <package id=\"which\" />\n    <package id=\"winmerge\" />\n    <package id=\"winscp\" />\n\n    <!--\n    <package id=\"anotherPackage\" version=\"1.1\" />\n    <package id=\"chocolateytestpackage\" version=\"0.1\" source=\"somelocation\" />\n    <package id=\"alloptions\" version=\"0.1.1\"\n            source=\"https://somewhere/api/v2/\" installArguments=\"\"\n            packageParameters=\"\" forceX86=\"false\" allowMultipleVersions=\"false\"\n            ignoreDependencies=\"false\"\n            />\n    -->\n</packages>\n"
+    },
+    {
+      "ensure": "Present",
+      "name": "hostupdater-script.ps1",
+      "path": "c:/ProgramData/decwinc/store",
+      "text": ""
+    },
+    {
+      "ensure": "Present",
+      "name": "scheduled_task-hostupdater.xml",
+      "path": "c:/ProgramData/decwinc/store",
+      "text": "<?xml version=\"1.0\" encoding=\"UTF-16\"?>\n<Task version=\"1.2\" xmlns=\"http://schemas.microsoft.com/windows/2004/02/mit/task\">\n<Triggers>\n    <CalendarTrigger>\n    <StartBoundary>2020-08-10T00:00:00</StartBoundary>\n    <Enabled>true</Enabled>\n    <ScheduleByDay>\n        <DaysInterval>1</DaysInterval>\n    </ScheduleByDay>\n    </CalendarTrigger>\n</Triggers>\n<Principals>\n    <Principal id=\"Author\">\n    <UserId>S-1-5-18</UserId>\n    <RunLevel>LeastPrivilege</RunLevel>\n    </Principal>\n</Principals>\n<Settings>\n    <MultipleInstancesPolicy>IgnoreNew</MultipleInstancesPolicy>\n    <DisallowStartIfOnBatteries>true</DisallowStartIfOnBatteries>\n    <StopIfGoingOnBatteries>true</StopIfGoingOnBatteries>\n    <AllowHardTerminate>true</AllowHardTerminate>\n    <StartWhenAvailable>true</StartWhenAvailable>\n    <RunOnlyIfNetworkAvailable>false</RunOnlyIfNetworkAvailable>\n    <IdleSettings>\n    <StopOnIdleEnd>true</StopOnIdleEnd>\n    <RestartOnIdle>false</RestartOnIdle>\n    </IdleSettings>\n    <AllowStartOnDemand>true</AllowStartOnDemand>\n    <Enabled>true</Enabled>\n    <Hidden>false</Hidden>\n    <RunOnlyIfIdle>false</RunOnlyIfIdle>\n    <WakeToRun>false</WakeToRun>\n    <ExecutionTimeLimit>PT4H</ExecutionTimeLimit>\n    <Priority>7</Priority>\n</Settings>\n<Actions Context=\"Author\">\n    <Exec>\n    <Command>powershell.exe</Command>\n    <Arguments>-File \"c:/ProgramData/decwinc/store/hostupdater-script.ps1\"</Arguments>\n    </Exec>\n</Actions>\n</Task>\n"
     }
   ],
   "registry": []
