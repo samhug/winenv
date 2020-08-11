@@ -1,58 +1,42 @@
+-- 
+-- Language Reference: https://docs.dhall-lang.org/
 
 let Prelude =
       https://prelude.dhall-lang.org/v17.1.0/package.dhall sha256:10db3c919c25e9046833df897a8ffe2701dc390fa0893d958c3430524be5a43e
 
--- let RegistryKeyType = < `dword` | `qword` >
+let RegistryValueType = < `Dword` | `Qword` >
 
+let EnsureType = < `Absent` | `Present` >
 
-let context = {
-  storePath = "c:/ProgramData/decwinc/store",
-}
+let context = { storePath = "c:/ProgramData/decwinc/store" }
 
--- let Module = { type : Text, config : Text, age : Natural }
+let FilesystemDecl = { ensure : EnsureType, path : Text, name : Text, text: Text }
+let RegistryDecl = { ensure : EnsureType, path : Text, name : Text, type: RegistryValueType, value: Text }
+let ActivationHookDecl = { command : Text, args : List Text }
 
--- let FilesystemDecl = { ensure : Text, path : Text, name : Natural, text: Text }
-
+-- let writeStorePath = \(x : Natural) -> x + 1
 
 -- in  { filesystem = Prelude.List.map User Text toEmail users
 --     , activationHook = Prelude.List.map User Bio toBio users
---     }
-
--- in {
---     a = "hello"
--- }
 
 in {
 
-  registry = [
---     {
---       ensure = "Present",
---       path = "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\TimeZoneInformation",
---       name = "RealTimeIsUniversal",
---       type = "Qword",
---       value = "00000001",
---     },
---     {
---       ensure = "Absent",
---       path = "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\MyComputer\\NameSpace\\{1CF1260C-4DD0-4ebb-811F-33C572699FDE}"
---     }
-  ] : List Natural,
-
   filesystem = [
+    -- Block Facebook by adding a "black-hole" route to the system hosts file
     {
-      ensure = "Present",
+      ensure = EnsureType.Present,
       path = "c:/windows/system32/drivers/etc",
       name = "hosts",
       text = "0.0.0.0    www.facebook.com",
     },
     {
-      ensure = "Present",
+      ensure = EnsureType.Present,
       path = "${context.storePath}",
       name = "xxxxxxxxxxxxxxxxxxxxxxxx-activation-hook.ps1",
       text = "Write-Host 'Hello from ps1 file'",
     },
     {
-      ensure = "Present",
+      ensure = EnsureType.Present,
       path = "${context.storePath}",
       name = "xxxxxxxxxxxxxxxxxxxxxxxx-chocolatey-packages.config",
       text =
@@ -90,16 +74,33 @@ in {
         </packages>
         '',
     }
-  ],
+  ] : List FilesystemDecl,
+  
+  registry = [
+       -- Make Windows expect the hardware clock to be set to UTC, linux
+       -- typically expects this so when dual-booting it's nice to be consistent
+--     {
+--       ensure = EnsureType.Present,
+--       path = "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\TimeZoneInformation",
+--       name = "RealTimeIsUniversal",
+--       type = RegistryValueType.Qword,
+--       value = "00000001",
+--     },
+--
+--     {
+--       ensure = "Absent",
+--       path = "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\MyComputer\\NameSpace\\{1CF1260C-4DD0-4ebb-811F-33C572699FDE}"
+--     }
+  ] : List RegistryDecl,
 
   activationHooks = [
     {
       command = "cmd",
-      args = [ "/C", "echo hello"],
+      args = [ "/C", "echo hello" ],
     },
     {
       command = "powershell.exe",
-      args = [ "-Command", "Write-Host 'hello'"],
+      args = [ "-Command", "Write-Host 'hello'" ],
     },
     {
       command = "powershell.exe",
@@ -116,5 +117,5 @@ in {
         "${context.storePath}/xxxxxxxxxxxxxxxxxxxxxxxx-chocolatey-packages.config"
       ],
     }
-  ]
+  ] : List ActivationHookDecl
 }

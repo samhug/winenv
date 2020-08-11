@@ -9,11 +9,14 @@ function CheckExitStatus {
     }
 }
 
+# Render Dhall configuration to a JSON declaration
 & "${PSScriptRoot}/dhall-config/dhall-to-json.exe" `
     --file "${PSScriptRoot}/dhall-config/decwinc.dhall" `
     --output "${PSScriptRoot}/decwinc-config.json"
 CheckExitStatus
 
+
+# Instantiate the JSON declaration
 & cargo run `
     --manifest-path "${PSScriptRoot}/decwinc/Cargo.toml" `
     --release `
