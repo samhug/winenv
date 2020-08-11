@@ -1,0 +1,3 @@
+{
+    "vscode-dhall-lsp-server.executable": "${workspaceFolder}/decwinc/dhall-config/dhall-lsp-server.exe",
+}

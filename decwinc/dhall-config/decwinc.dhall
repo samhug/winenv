@@ -168,13 +168,13 @@ in {
         "${context.storePath}/activation-hook.ps1"
       ],
     },
-    
+
     -- Activation hook to register the scheduled task to update the host
     {
       command = "powershell.exe",
       args = [ "-Command", "Register-ScheduledTask -TaskName 'DecWinC - Host Updater' -Xml (get-content '${context.storePath}/scheduled_task-hostupdater.xml' | out-string) -Force" ],
     },
-    
+
     {
       command = "choco",
       args = [
