@@ -4,14 +4,17 @@
 let Prelude =
       https://prelude.dhall-lang.org/v17.1.0/package.dhall sha256:10db3c919c25e9046833df897a8ffe2701dc390fa0893d958c3430524be5a43e
 
-let RegistryValueType = < `Dword` | `Qword` >
+let lib = ./lib/package.dhall
+
+let context = ./context.dhall
 
 let EnsureType = < `Absent` | `Present` >
 
-let context = { storePath = "c:/ProgramData/decwinc/store" }
-
 let FilesystemDecl = { ensure : EnsureType, path : Text, name : Text, text: Text }
+
+let RegistryValueType = < `Dword` | `Qword` >
 let RegistryDecl = { ensure : EnsureType, path : Text, name : Text, type: RegistryValueType, value: Text }
+
 let ActivationHookDecl = { command : Text, args : List Text }
 
 -- let writeStorePath = \(x : Natural) -> x + 1
@@ -19,15 +22,16 @@ let ActivationHookDecl = { command : Text, args : List Text }
 -- in  { filesystem = Prelude.List.map User Text toEmail users
 --     , activationHook = Prelude.List.map User Bio toBio users
 
-in {
-
-  filesystem = [
-    -- Block Facebook by adding a "black-hole" route to the system hosts file
+let filesystem: List FilesystemDecl = [
     {
       ensure = EnsureType.Present,
       path = "c:/windows/system32/drivers/etc",
       name = "hosts",
-      text = "0.0.0.0    www.facebook.com",
+      text = lib.hostsFile.makeHostsFile [
+        -- Block Facebook by resolving the domain to 0.0.0.0
+        { ip = "0.0.0.0", name = "www.facebook.com" },
+        { ip = "10.90.0.1", name = "workspace-home.snet.sa.m-h.ug" },
+      ],
     },
     {
       ensure = EnsureType.Present,
@@ -39,40 +43,26 @@ in {
       ensure = EnsureType.Present,
       path = "${context.storePath}",
       name = "chocolatey-packages.config",
-      text =
-        ''
-        <?xml version="1.0" encoding="utf-8"?>
-        <packages>
-            <package id="7zip" />
-            <package id="curl" />
-            <package id="git" />
-            <package id="keepass" />
-            <package id="nmap" />
-            <package id="openssh" />
-            <package id="python" />
-            <package id="qemu" />
-            <package id="ripgrep" />
-            <package id="rustup.install" />
-            <package id="starship" />
-            <package id="sudo" />
-            <package id="sysinternals" />
-            <package id="vlc" />
-            <!-- <package id="vscode" /> -->
-            <package id="which" />
-            <package id="winmerge" />
-            <package id="winscp" />
-
-            <!--
-            <package id="anotherPackage" version="1.1" />
-            <package id="chocolateytestpackage" version="0.1" source="somelocation" />
-            <package id="alloptions" version="0.1.1"
-                    source="https://somewhere/api/v2/" installArguments=""
-                    packageParameters="" forceX86="false" allowMultipleVersions="false"
-                    ignoreDependencies="false"
-                    />
-            -->
-        </packages>
-        '',
+      text = lib.chocolatey.makeConfig [
+        "7zip",
+        "curl",
+        "git",
+        "keepass",
+        "nmap",
+        "openssh",
+        "python",
+        "qemu",
+        "ripgrep",
+        "rustup.install",
+        "starship",
+        "sudo",
+        "sysinternals",
+        "vlc",
+        -- "vscode",
+        "which",
+        "winmerge",
+        "winscp",
+      ],
     },
     {
       ensure = EnsureType.Present,
@@ -133,26 +123,26 @@ in {
         </Task>
         '',
     }
-  ] : List FilesystemDecl,
-  
-  registry = [
-       -- Make Windows expect the hardware clock to be set to UTC, linux
-       -- typically expects this so when dual-booting it's nice to be consistent
---     {
---       ensure = EnsureType.Present,
---       path = "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\TimeZoneInformation",
---       name = "RealTimeIsUniversal",
---       type = RegistryValueType.Qword,
---       value = "00000001",
---     },
---
---     {
---       ensure = "Absent",
---       path = "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\MyComputer\\NameSpace\\{1CF1260C-4DD0-4ebb-811F-33C572699FDE}"
---     }
-  ] : List RegistryDecl,
+  ]
 
-  activationHooks = [
+  let registry = [] : List RegistryDecl
+  -- let registry = [
+  --     -- Make Windows expect the hardware clock to be set to UTC, linux
+  --     -- typically expects this so when dual-booting it's nice to be consistent
+  --     {
+  --       ensure = EnsureType.Present,
+  --       path = "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\TimeZoneInformation",
+  --       name = "RealTimeIsUniversal",
+  --       type = RegistryValueType.Qword,
+  --       value = "00000001",
+  --     },
+  --     {
+  --       ensure = "Absent",
+  --       path = "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\MyComputer\\NameSpace\\{1CF1260C-4DD0-4ebb-811F-33C572699FDE}"
+  --     }
+  -- ]
+
+  let activationHooks: List ActivationHookDecl = [
     {
       command = "cmd",
       args = [ "/C", "echo hello" ],
@@ -183,5 +173,17 @@ in {
         "${context.storePath}/chocolatey-packages.config"
       ],
     }
-  ] : List ActivationHookDecl
-}
+  ]
+
+let RootType = { filesystem: List FilesystemDecl
+               , registry: List RegistryDecl
+               , activationHooks: List ActivationHookDecl
+               }
+
+let declaration: RootType =
+    { filesystem = filesystem
+    , registry = registry
+    , activationHooks = activationHooks
+    }
+
+in declaration
