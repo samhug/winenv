@@ -23,14 +23,41 @@ let filesystem: List lib.types.FilesystemDecl = [
     {
       ensure = lib.types.EnsureType.Present,
       path = "${context.storePath}",
-      name = "explorer-show-file-exts.reg",
+      name = "registry.reg",
+      -- text = lib.windowsRegistry.makeRegistryFile (Prelude.List.concat lib.windowsRegistry.RegistryEntryType [
       text = lib.windowsRegistry.makeRegistryFile [
-        { path = "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced"
-        , name = "HideFileExt"
-        , type = "dword"
-        , value = "00000000"
-        }
-      ],
+
+          -- Show hidden files
+          { path = "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced"
+          , name = "Hidden"
+          , type = "dword"
+          , value = "00000001"
+          },
+
+          -- Don't hide file extensions
+          { path = "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced"
+          , name = "HideFileExt"
+          , type = "dword"
+          , value = "00000000"
+          }
+
+        -- -- Set user scoped environment variables
+        -- [
+
+        --   { path = "HKEY_CURRENT_USER\\Environment"
+        --   , name = "GIT_GET_ROOT"
+        --   , type = "sz"
+        --   , value = "${context.user.profilePath}/wksp"
+        --   },
+
+        --   { path = "HKEY_CURRENT_USER\\Environment"
+        --   , name = "RUST_BACKTRACE"
+        --   , type = "sz"
+        --   , value = "${context.user.profilePath}/wksp"
+        --   }
+
+        -- ],
+      ]
     },
     {
       ensure = lib.types.EnsureType.Present,
@@ -122,7 +149,7 @@ let filesystem: List lib.types.FilesystemDecl = [
       args = [ "-Command", "Register-ScheduledTask -TaskName 'DecWinC - User Updater' -Xml (get-content '${context.storePath}/scheduled_task-updater.xml' | out-string) -Force" ],
     },
 
-    (lib.windowsRegistry.makeActivationHook "${context.storePath}/explorer-show-file-exts.reg"),
+    -- (lib.windowsRegistry.makeActivationHook "${context.storePath}/registry.reg"),
   ]
 
 let declaration: lib.types.RootType =

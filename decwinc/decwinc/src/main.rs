@@ -20,7 +20,7 @@ fn main() {
     let config_path = Path::new(&opts.config);
 
     let cfg = parse_config(config_path).unwrap_or_else(|err| {
-        eprintln!("config error: {}", err);
+        eprintln!("config error:\n{}", err);
         std::process::exit(1);
     });
 
@@ -38,6 +38,8 @@ fn parse_config(path: &Path) -> Result<config::Config, String> {
 
     // Read the JSON contents of the file as an instance of `Config`.
     serde_json::from_reader(reader).map_err(|err| err.to_string())
+
+    // serde_dhall::from_file(path).parse().map_err(|err| err.to_string())
 }
 
 fn instantiate_config(cfg: &config::Config) -> Result<(), String> {
@@ -86,16 +88,15 @@ fn instantiate_config(cfg: &config::Config) -> Result<(), String> {
             println!("SUCCESS");
         } else {
             eprintln!(
-                "FAILURE - exit code {}",
+                "FAILURE{}",
                 status
                     .code()
-                    .map(|c| c.to_string())
+                    .map(|c| format!(" - exit code {}", c))
                     .unwrap_or_default()
             );
             return Err("activation_hook failed".to_string());
         }
     }
 
-    // Err("unimplemented")
     Ok(())
 }

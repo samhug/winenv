@@ -6,12 +6,18 @@ let concatMapSep = https://prelude.dhall-lang.org/Text/concatMapSep
 -- https://support.microsoft.com/en-us/help/310516/how-to-add-modify-or-delete-registry-subkeys-and-values-by-using-a-reg
 
 
+-- let RegistryValueType = < `dword` | `sz` >
 let RegistryEntryType = { path: Text, name: Text, type: Text, value: Text }
 let makeRegistryFile = \(registryEntries: List RegistryEntryType) -> 
-    let renderedEntries = concatMapSep "\n" RegistryEntryType (\(registryEntry: RegistryEntryType) -> ''
-        [${registryEntry.path}]
-        "${registryEntry.name}"=${registryEntry.type}:${registryEntry.value}
-        '') registryEntries
+    let renderedEntries = concatMapSep "\n" RegistryEntryType (\(registryEntry: RegistryEntryType) ->
+        -- let renderValue : RegistryValueType → Text
+        --     renderValue = \(r: RegistryValueType) merge { dword = "dword:${r.value}" sz = "\"${r.value}\"" } r.type
+        -- let valueString = renderValue registryEntry
+        ''
+            [${registryEntry.path}]
+            "${registryEntry.name}"=${registryEntry.type}:${registryEntry.value}
+            ''
+        ) registryEntries
     in ''
     Windows Registry Editor Version 5.00
 
@@ -41,4 +47,6 @@ let example1 = assert : makeActivationHook "c:/path/to/key.reg" ≡ { command = 
 
 in { makeRegistryFile = makeRegistryFile
    , makeActivationHook = makeActivationHook
+
+   , RegistryEntryType = RegistryEntryType
    }

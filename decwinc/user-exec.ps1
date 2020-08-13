@@ -30,6 +30,8 @@ if (!$renderOnly) {
         --release `
         -- `
         --config "${PSScriptRoot}/user-config.json"
+        # --config "${PSScriptRoot}/dhall-config/user-config.dhall"
+        
     CheckExitStatus
 }
 

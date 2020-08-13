@@ -40,7 +40,7 @@ let filesystem: List lib.types.FilesystemDecl = [
         "python",
         "qemu",
         "ripgrep",
-        "rustup.install",
+        -- "rustup.install",
         "starship",
         "sudo",
         "sysinternals",

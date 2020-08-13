@@ -27,13 +27,6 @@
         "Register-ScheduledTask -TaskName 'DecWinC - User Updater' -Xml (get-content 'C:/Users/shug/AppData/Local/decwinc/store/scheduled_task-updater.xml' | out-string) -Force"
       ],
       "command": "powershell.exe"
-    },
-    {
-      "args": [
-        "import",
-        "C:/Users/shug/AppData/Local/decwinc/store/explorer-show-file-exts.reg"
-      ],
-      "command": "reg"
     }
   ],
   "filesystem": [
@@ -45,9 +38,9 @@
     },
     {
       "ensure": "Present",
-      "name": "explorer-show-file-exts.reg",
+      "name": "registry.reg",
       "path": "C:/Users/shug/AppData/Local/decwinc/store",
-      "text": "Windows Registry Editor Version 5.00\n\n[HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced]\n\"HideFileExt\"=dword:00000000\n"
+      "text": "Windows Registry Editor Version 5.00\n\n[HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced]\n\"Hidden\"=dword:00000001\n\n[HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced]\n\"HideFileExt\"=dword:00000000\n"
     },
     {
       "ensure": "Present",

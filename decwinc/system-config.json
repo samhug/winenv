@@ -54,7 +54,7 @@
       "ensure": "Present",
       "name": "chocolatey-packages.config",
       "path": "c:/ProgramData/decwinc/store",
-      "text": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<packages>\n    <package id=\"7zip\" />\n    <package id=\"curl\" />\n    <package id=\"git\" />\n    <package id=\"keepass\" />\n    <package id=\"nmap\" />\n    <package id=\"openssh\" />\n    <package id=\"python\" />\n    <package id=\"qemu\" />\n    <package id=\"ripgrep\" />\n    <package id=\"rustup.install\" />\n    <package id=\"starship\" />\n    <package id=\"sudo\" />\n    <package id=\"sysinternals\" />\n    <package id=\"vlc\" />\n    <package id=\"which\" />\n    <package id=\"winmerge\" />\n    <package id=\"winscp\" />\n</packages>\n"
+      "text": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<packages>\n    <package id=\"7zip\" />\n    <package id=\"curl\" />\n    <package id=\"git\" />\n    <package id=\"keepass\" />\n    <package id=\"nmap\" />\n    <package id=\"openssh\" />\n    <package id=\"python\" />\n    <package id=\"qemu\" />\n    <package id=\"ripgrep\" />\n    <package id=\"starship\" />\n    <package id=\"sudo\" />\n    <package id=\"sysinternals\" />\n    <package id=\"vlc\" />\n    <package id=\"which\" />\n    <package id=\"winmerge\" />\n    <package id=\"winscp\" />\n</packages>\n"
     },
     {
       "ensure": "Present",
