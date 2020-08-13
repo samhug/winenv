@@ -112,7 +112,6 @@ let filesystem: List lib.types.FilesystemDecl = [
     }
   ]
 
-  let registry = [] : List lib.types.RegistryDecl
   -- let registry = [
   --     -- Make Windows expect the hardware clock to be set to UTC, linux
   --     -- typically expects this so when dual-booting it's nice to be consistent
@@ -164,7 +163,6 @@ let filesystem: List lib.types.FilesystemDecl = [
 
 let declaration: lib.types.RootType =
     { filesystem = filesystem
-    , registry = registry
     , activationHooks = activationHooks
     }
 

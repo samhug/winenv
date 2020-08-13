@@ -71,18 +71,6 @@ fn instantiate_config(cfg: &config::Config) -> Result<(), String> {
         println!("SUCCESS");
     }
 
-    // for reg_decl in &cfg.registry {
-    //     println!("{:#?}", reg_decl);
-    //     match reg_decl.ensure {
-    //         config::Ensure::Absent => {
-    //             unimplemented!();
-    //         },
-    //         config::Ensure::Present => {
-    //             unimplemented!();
-    //         },
-    //     }
-    // }
-
     for ah_decl in &cfg.activation_hooks {
         println!(
             "[activation_hook] {:?} {:?}",

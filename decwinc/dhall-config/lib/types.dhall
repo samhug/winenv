@@ -18,7 +18,6 @@ in { EnsureType = EnsureType
 
 
    , RootType = { filesystem: List FilesystemDecl
-               , registry: List RegistryDecl
                , activationHooks: List ActivationHookDecl
                }
 }

@@ -23,6 +23,18 @@ let filesystem: List lib.types.FilesystemDecl = [
     {
       ensure = lib.types.EnsureType.Present,
       path = "${context.storePath}",
+      name = "explorer-show-file-exts.reg",
+      text = lib.windowsRegistry.makeRegistryFile [
+        { path = "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced"
+        , name = "HideFileExt"
+        , type = "dword"
+        , value = "00000000"
+        }
+      ],
+    },
+    {
+      ensure = lib.types.EnsureType.Present,
+      path = "${context.storePath}",
       name = "activation-hook.ps1",
       text = "Write-Host 'Hello from ps1 file'",
     },
@@ -39,8 +51,6 @@ let filesystem: List lib.types.FilesystemDecl = [
       path = "${context.storePath}",
       name = "scheduled_task-updater.xml",
       text =
-                    -- <UserId>S-1-5-21-166986735-140526526-1539857752-5580</UserId>
-                    
         ''
         <?xml version="1.0" encoding="UTF-16"?>
         <Task version="1.2" xmlns="http://schemas.microsoft.com/windows/2004/02/mit/task">
@@ -89,23 +99,6 @@ let filesystem: List lib.types.FilesystemDecl = [
     }
   ]
 
-  let registry = [] : List lib.types.RegistryDecl
-  -- let registry = [
-  --     -- Make Windows expect the hardware clock to be set to UTC, linux
-  --     -- typically expects this so when dual-booting it's nice to be consistent
-  --     {
-  --       ensure = EnsureType.Present,
-  --       path = "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\TimeZoneInformation",
-  --       name = "RealTimeIsUniversal",
-  --       type = RegistryValueType.Qword,
-  --       value = "00000001",
-  --     },
-  --     {
-  --       ensure = "Absent",
-  --       path = "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\MyComputer\\NameSpace\\{1CF1260C-4DD0-4ebb-811F-33C572699FDE}"
-  --     }
-  -- ]
-
   let activationHooks: List lib.types.ActivationHookDecl = [
     {
       command = "cmd",
@@ -129,11 +122,11 @@ let filesystem: List lib.types.FilesystemDecl = [
       args = [ "-Command", "Register-ScheduledTask -TaskName 'DecWinC - User Updater' -Xml (get-content '${context.storePath}/scheduled_task-updater.xml' | out-string) -Force" ],
     },
 
+    (lib.windowsRegistry.makeActivationHook "${context.storePath}/explorer-show-file-exts.reg"),
   ]
 
 let declaration: lib.types.RootType =
     { filesystem = filesystem
-    , registry = registry
     , activationHooks = activationHooks
     }
 
