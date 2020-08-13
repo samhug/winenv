@@ -35,6 +35,13 @@
         "c:/ProgramData/decwinc/store/chocolatey-packages.config"
       ],
       "command": "choco"
+    },
+    {
+      "args": [
+        "import",
+        "c:/ProgramData/decwinc/store/registry.reg"
+      ],
+      "command": "reg"
     }
   ],
   "filesystem": [
@@ -43,6 +50,12 @@
       "name": "hosts",
       "path": "c:/windows/system32/drivers/etc",
       "text": "0.0.0.0 www.facebook.com\n10.90.0.1 workspace-home.snet.sa.m-h.ug"
+    },
+    {
+      "ensure": "Present",
+      "name": "registry.reg",
+      "path": "c:/ProgramData/decwinc/store",
+      "text": "Windows Registry Editor Version 5.00\n\n[HKEY_LOCAL_MACHINE\\SOFTWARE\\Policies\\Microsoft\\Windows\\System]\n\"EnableActivityFeed\"=dword:00000000\n\n[HKEY_LOCAL_MACHINE\\SOFTWARE\\Policies\\Microsoft\\Windows\\System]\n\"DisableLogonBackgroundImage\"=dword:00000001\n\n[HKEY_LOCAL_MACHINE\\SOFTWARE\\Policies\\Microsoft\\Windows\\Windows Search]\n\"AllowCortana\"=dword:00000000\n\n[HKEY_LOCAL_MACHINE\\SOFTWARE\\Policies\\Microsoft\\Windows\\DataCollection]\n\"AllowTelemetry\"=dword:00000000\n"
     },
     {
       "ensure": "Present",
