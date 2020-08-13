@@ -45,12 +45,12 @@ https://markgossa.blogspot.com/2017/08/learn-powershell-dsc-part-1.html
 -   Windows Terminal configuration
 -   VSCode config & extensions
 -   Firefox config & extensions
--   Chocolaty packages?
+-   ~~Chocolaty packages?~~
 -   Default Apps
     -   Web Browser
 -   Explorer settings
-    -   Show hidden files
-    -   Display extensions for known file types
+    -   ~~Show hidden files~~
+    -   ~~Display extensions for known file types~~
     -   Always use "Details" view
     -   Quick access links
 -   Clipboard History
@@ -58,6 +58,6 @@ https://markgossa.blogspot.com/2017/08/learn-powershell-dsc-part-1.html
 -   AutoHotKey Custom Keyboard Shortcuts
     -   Clipboard AutoTyper
 -   Task Scheduler
-    -   Delete old Downloads
+    -   ~~Delete old Downloads~~
     -   Facelog
     -   Auto chocolatey udpate?
