@@ -2,13 +2,14 @@
 
 
 ## Aspects of Microsoft Windows I want to manage declaratively:
-- Computer
+
+- ### Computer Settings
     - [x] Chocolaty packages
     - [ ] Install & configure Wireguard
     - [ ] Set environment variables
         - `HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Session Manager\Environment`
 
-- User
+- ### User Settings
     - [ ] Set environment variables
         - `HKEY_CURRENT_USER\Environment`
     - [ ] Set wallpaper
@@ -44,12 +45,21 @@
 
 
 
-## Links:
 
-- https://www.red-gate.com/simple-talk/sysadmin/powershell/powershell-desired-state-configuration-the-basics/
-- https://docs.microsoft.com/en-us/powershell/scripting/dsc/reference/resources/windows/registryresource?view=powershell-7
-- https://markgossa.blogspot.com/2017/08/learn-powershell-dsc-part-1.html
-- https://github.com/dsccommunity/ComputerManagementDsc
-    ```powershell
-    Find-Module -Name ComputerManagementDsc -Repository PSGallery | Install-Module
-    ```
+--
+## Links & Reference Materials:
+*A mostly unorganized dumping ground —*
+
+- [#dhall on  StackOverflow](https://stackoverflow.com/questions/tagged/dhall)
+
+- IP Addresses in Dhall
+    - https://github.com/dhall-lang/dhall-lang/issues/217
+    - https://github.com/duairc/dhall-ip-address
+    - https://stackoverflow.com/questions/54579764/how-do-i-represent-a-tuple-in-dhall
+    
+- Powershell Desired State Configuration
+    - https://www.red-gate.com/simple-talk/sysadmin/powershell/powershell-desired-state-configuration-the-basics/
+    - https://docs.microsoft.com/en-us/powershell/scripting/dsc/reference/resources/windows/registryresource?view=powershell-7
+    - https://markgossa.blogspot.com/2017/08/learn-powershell-dsc-part-1.html
+    - https://github.com/dsccommunity/ComputerManagementDsc
+    - `Find-Module -Name ComputerManagementDsc -Repository PSGallery | Install-Module`
