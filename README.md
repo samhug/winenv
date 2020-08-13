@@ -8,6 +8,8 @@
     - [ ] Install & configure Wireguard
     - [ ] Set environment variables
         - `HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Session Manager\Environment`
+    - [ ] Disable clipboard history
+        - https://www.majorgeeks.com/content/page/how_to_disable_clipboard_history_in_windows_10.html
 
 - ### User Settings
     - [ ] Set environment variables
@@ -34,16 +36,14 @@
         - [x] Show hidden files
         - [x] Display extensions for known file types
         - [ ] Always use "Details" view
+            - https://superuser.com/questions/253249/windows-registry-entries-for-default-explorer-view
         - [ ] Quick access links
-    - [ ] Disable clipboard history
     - [ ] AutoHotKey Custom Keyboard Shortcuts
         - [ ] Clipboard AutoTyper
     - [ ] Task Scheduler
         - [x] Delete old Downloads
         - [ ]  Facelog
         - [ ]  Auto chocolatey udpate?
-
-
 
 
 --

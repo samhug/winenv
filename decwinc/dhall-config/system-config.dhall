@@ -53,6 +53,13 @@ let filesystem: List lib.types.FilesystemDecl = [
           , value = "00000000"
           },
 
+          -- Disable clipboard history - https://www.majorgeeks.com/content/page/how_to_disable_clipboard_history_in_windows_10.html
+          { path = "HKEY_LOCAL_MACHINE\\SOFTWARE\\Policies\\Microsoft\\Windows\\System"
+          , name = "AllowClipboardHistory"
+          , type = "dword"
+          , value = "00000000"
+          },
+
         -- -- Set system scoped environment variables
         -- [
 
