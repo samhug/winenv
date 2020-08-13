@@ -89,18 +89,20 @@ fn instantiate_config(cfg: &config::Config) -> Result<(), String> {
             &ah_decl.command, &ah_decl.args
         );
 
-        let output = std::process::Command::new(&ah_decl.command)
+        let status = std::process::Command::new(&ah_decl.command)
             .args(&ah_decl.args[..])
-            .output()
+            .status()
             .expect("failed to execute process");
 
-        if output.status.success() {
-            println!("SUCCESS: {}", std::str::from_utf8(&output.stdout).unwrap());
+        if status.success() {
+            println!("SUCCESS");
         } else {
             eprintln!(
-                "FAILURE: {}\n{}",
-                std::str::from_utf8(&output.stdout).unwrap(),
-                std::str::from_utf8(&output.stderr).unwrap()
+                "FAILURE - exit code {}",
+                status
+                    .code()
+                    .map(|c| c.to_string())
+                    .unwrap_or_default()
             );
             return Err("activation_hook failed".to_string());
         }

@@ -6,25 +6,12 @@ let Prelude =
 
 let lib = ./lib/package.dhall
 
-let context = ./context.dhall
+let context = ./system-context.dhall
 
-let EnsureType = < `Absent` | `Present` >
 
-let FilesystemDecl = { ensure : EnsureType, path : Text, name : Text, text: Text }
-
-let RegistryValueType = < `Dword` | `Qword` >
-let RegistryDecl = { ensure : EnsureType, path : Text, name : Text, type: RegistryValueType, value: Text }
-
-let ActivationHookDecl = { command : Text, args : List Text }
-
--- let writeStorePath = \(x : Natural) -> x + 1
-
--- in  { filesystem = Prelude.List.map User Text toEmail users
---     , activationHook = Prelude.List.map User Bio toBio users
-
-let filesystem: List FilesystemDecl = [
+let filesystem: List lib.types.FilesystemDecl = [
     {
-      ensure = EnsureType.Present,
+      ensure = lib.types.EnsureType.Present,
       path = "c:/windows/system32/drivers/etc",
       name = "hosts",
       text = lib.hostsFile.makeHostsFile [
@@ -34,13 +21,13 @@ let filesystem: List FilesystemDecl = [
       ],
     },
     {
-      ensure = EnsureType.Present,
+      ensure = lib.types.EnsureType.Present,
       path = "${context.storePath}",
       name = "activation-hook.ps1",
       text = "Write-Host 'Hello from ps1 file'",
     },
     {
-      ensure = EnsureType.Present,
+      ensure = lib.types.EnsureType.Present,
       path = "${context.storePath}",
       name = "chocolatey-packages.config",
       text = lib.chocolatey.makeConfig [
@@ -65,7 +52,7 @@ let filesystem: List FilesystemDecl = [
       ],
     },
     {
-      ensure = EnsureType.Present,
+      ensure = lib.types.EnsureType.Present,
       path = "${context.storePath}",
       name = "hostupdater-script.ps1",
       text =
@@ -73,7 +60,7 @@ let filesystem: List FilesystemDecl = [
         '',
     },
     {
-      ensure = EnsureType.Present,
+      ensure = lib.types.EnsureType.Present,
       path = "${context.storePath}",
       name = "scheduled_task-hostupdater.xml",
       text =
@@ -125,7 +112,7 @@ let filesystem: List FilesystemDecl = [
     }
   ]
 
-  let registry = [] : List RegistryDecl
+  let registry = [] : List lib.types.RegistryDecl
   -- let registry = [
   --     -- Make Windows expect the hardware clock to be set to UTC, linux
   --     -- typically expects this so when dual-booting it's nice to be consistent
@@ -142,7 +129,7 @@ let filesystem: List FilesystemDecl = [
   --     }
   -- ]
 
-  let activationHooks: List ActivationHookDecl = [
+  let activationHooks: List lib.types.ActivationHookDecl = [
     {
       command = "cmd",
       args = [ "/C", "echo hello" ],
@@ -175,12 +162,7 @@ let filesystem: List FilesystemDecl = [
     }
   ]
 
-let RootType = { filesystem: List FilesystemDecl
-               , registry: List RegistryDecl
-               , activationHooks: List ActivationHookDecl
-               }
-
-let declaration: RootType =
+let declaration: lib.types.RootType =
     { filesystem = filesystem
     , registry = registry
     , activationHooks = activationHooks
