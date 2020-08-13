@@ -27,6 +27,13 @@
         "Register-ScheduledTask -TaskName 'DecWinC - User Updater' -Xml (get-content 'C:/Users/shug/AppData/Local/decwinc/store/scheduled_task-updater.xml' | out-string) -Force"
       ],
       "command": "powershell.exe"
+    },
+    {
+      "args": [
+        "import",
+        "C:/Users/shug/AppData/Local/decwinc/store/registry.reg"
+      ],
+      "command": "reg"
     }
   ],
   "filesystem": [

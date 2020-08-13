@@ -149,7 +149,7 @@ let filesystem: List lib.types.FilesystemDecl = [
       args = [ "-Command", "Register-ScheduledTask -TaskName 'DecWinC - User Updater' -Xml (get-content '${context.storePath}/scheduled_task-updater.xml' | out-string) -Force" ],
     },
 
-    -- (lib.windowsRegistry.makeActivationHook "${context.storePath}/registry.reg"),
+    (lib.windowsRegistry.makeActivationHook "${context.storePath}/registry.reg"),
   ]
 
 let declaration: lib.types.RootType =
