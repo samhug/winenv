@@ -23,6 +23,51 @@ let filesystem: List lib.types.FilesystemDecl = [
     {
       ensure = lib.types.EnsureType.Present,
       path = "${context.storePath}",
+      name = "registry.reg",
+      -- text = lib.windowsRegistry.makeRegistryFile (Prelude.List.concat lib.windowsRegistry.RegistryEntryType [
+      text = lib.windowsRegistry.makeRegistryFile [
+
+          -- Disable Windows 10 Timeline - https://winaero.com/blog/disable-timeline-windows-10-group-policy/
+          { path = "HKEY_LOCAL_MACHINE\\SOFTWARE\\Policies\\Microsoft\\Windows\\System"
+          , name = "EnableActivityFeed"
+          , type = "dword"
+          , value = "00000000"
+          },
+
+          -- Disable logon screen background image - https://winaero.com/blog/disable-logon-screen-background-image-in-windows-10-without-using-third-party-tools/
+          { path = "HKEY_LOCAL_MACHINE\\SOFTWARE\\Policies\\Microsoft\\Windows\\System"
+          , name = "DisableLogonBackgroundImage"
+          , type = "dword"
+          , value = "00000001"
+          },
+
+          -- Disable cortana - https://winaero.com/blog/disable-cortana-in-windows-10-anniversary-update-version-1607/
+          { path = "HKEY_LOCAL_MACHINE\\SOFTWARE\\Policies\\Microsoft\\Windows\\Windows Search"
+          , name = "AllowCortana"
+          , type = "dword"
+          , value = "00000000"
+          },
+
+          -- Disable Windows Telemetry - https://winaero.com/blog/how-to-disable-telemetry-and-data-collection-in-windows-10/
+          -- TODO: Need to also disable services
+          { path = "HKEY_LOCAL_MACHINE\\SOFTWARE\\Policies\\Microsoft\\Windows\\DataCollection"
+          , name = "AllowTelemetry"
+          , type = "dword"
+          , value = "00000000"
+          },
+          
+          
+
+
+        -- -- Set system scoped environment variables
+        -- [
+
+        -- ],
+      ]
+    },
+    {
+      ensure = lib.types.EnsureType.Present,
+      path = "${context.storePath}",
       name = "activation-hook.ps1",
       text = "Write-Host 'Hello from ps1 file'",
     },
@@ -158,7 +203,9 @@ let filesystem: List lib.types.FilesystemDecl = [
         "--confirm",
         "${context.storePath}/chocolatey-packages.config"
       ],
-    }
+    },
+
+    (lib.windowsRegistry.makeActivationHook "${context.storePath}/registry.reg"),
   ]
 
 let declaration: lib.types.RootType =

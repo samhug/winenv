@@ -47,7 +47,7 @@
       "ensure": "Present",
       "name": "registry.reg",
       "path": "C:/Users/shug/AppData/Local/decwinc/store",
-      "text": "Windows Registry Editor Version 5.00\n\n[HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced]\n\"Hidden\"=dword:00000001\n\n[HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced]\n\"HideFileExt\"=dword:00000000\n"
+      "text": "Windows Registry Editor Version 5.00\n\n[HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer]\n\"ShowDriveLettersFirst\"=dword:00000004\n\n[HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced]\n\"Hidden\"=dword:00000001\n\n[HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced]\n\"HideFileExt\"=dword:00000000\n\n[HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced]\n\"DisallowShaking\"=dword:00000001\n\n[HKEY_CURRENT_USER\\SOFTWARE\\Policies\\Microsoft\\Windows\\CurrentVersion\\PushNotifications]\n\"NoTileApplicationNotification\"=dword:00000001\n\n[HKEY_CURRENT_USER\\Software\\Policies\\Microsoft\\Windows\\Explorer]\n\"HidePeopleBar\"=dword:00000001\n"
     },
     {
       "ensure": "Present",

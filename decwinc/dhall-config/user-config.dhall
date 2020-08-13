@@ -27,6 +27,13 @@ let filesystem: List lib.types.FilesystemDecl = [
       -- text = lib.windowsRegistry.makeRegistryFile (Prelude.List.concat lib.windowsRegistry.RegistryEntryType [
       text = lib.windowsRegistry.makeRegistryFile [
 
+          -- Show driver letters before names - https://winaero.com/blog/show-drive-letters-before-drive-names-in-this-pc-computer-folder/ 
+          { path = "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer"
+          , name = "ShowDriveLettersFirst"
+          , type = "dword"
+          , value = "00000004"
+          },
+
           -- Show hidden files
           { path = "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced"
           , name = "Hidden"
@@ -39,7 +46,32 @@ let filesystem: List lib.types.FilesystemDecl = [
           , name = "HideFileExt"
           , type = "dword"
           , value = "00000000"
-          }
+          },
+          
+          -- Disable Aero Shake - https://winaero.com/blog/disable-aero-shake-in-windows-10-windows-8-and-windows-7/
+          { path = "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced"
+          , name = "DisallowShaking"
+          , type = "dword"
+          , value = "00000001"
+          },
+
+          -- Disable start menu live tiles - https://winaero.com/blog/disable-live-tiles-all-at-once-in-windows-10-start-menu/
+          { path = "HKEY_CURRENT_USER\\SOFTWARE\\Policies\\Microsoft\\Windows\\CurrentVersion\\PushNotifications"
+          , name = "NoTileApplicationNotification"
+          , type = "dword"
+          , value = "00000001"
+          },
+
+          -- Hide people bar - https://winaero.com/blog/disable-people-windows-10-group-policy/
+          { path = "HKEY_CURRENT_USER\\Software\\Policies\\Microsoft\\Windows\\Explorer"
+          , name = "HidePeopleBar"
+          , type = "dword"
+          , value = "00000001"
+          },
+          
+
+          
+
 
         -- -- Set user scoped environment variables
         -- [
