@@ -1,9 +1,6 @@
 -- 
 -- Language Reference: https://docs.dhall-lang.org/
 
-let Prelude =
-      https://prelude.dhall-lang.org/v17.1.0/package.dhall sha256:10db3c919c25e9046833df897a8ffe2701dc390fa0893d958c3430524be5a43e
-
 let lib = ./lib/package.dhall
 
 let context = ./system-context.dhall
@@ -24,7 +21,7 @@ let filesystem: List lib.types.FilesystemDecl = [
       ensure = lib.types.EnsureType.Present,
       path = "${context.storePath}",
       name = "registry.reg",
-      -- text = lib.windowsRegistry.makeRegistryFile (Prelude.List.concat lib.windowsRegistry.RegistryEntryType [
+      -- text = lib.windowsRegistry.makeRegistryFile (lib.prelude.List.concat lib.windowsRegistry.RegistryEntryType [
       text = lib.windowsRegistry.makeRegistryFile [
 
           -- Disable Windows 10 Timeline - https://winaero.com/blog/disable-timeline-windows-10-group-policy/

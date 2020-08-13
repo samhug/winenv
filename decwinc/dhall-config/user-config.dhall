@@ -1,9 +1,6 @@
 -- 
 -- Language Reference: https://docs.dhall-lang.org/
 
-let Prelude =
-      https://prelude.dhall-lang.org/v17.1.0/package.dhall sha256:10db3c919c25e9046833df897a8ffe2701dc390fa0893d958c3430524be5a43e
-
 let lib = ./lib/package.dhall
 
 let context = ./user-context.dhall
@@ -24,7 +21,7 @@ let filesystem: List lib.types.FilesystemDecl = [
       ensure = lib.types.EnsureType.Present,
       path = "${context.storePath}",
       name = "registry.reg",
-      -- text = lib.windowsRegistry.makeRegistryFile (Prelude.List.concat lib.windowsRegistry.RegistryEntryType [
+      -- text = lib.windowsRegistry.makeRegistryFile (lib.prelude.List.concat lib.windowsRegistry.RegistryEntryType [
       text = lib.windowsRegistry.makeRegistryFile [
 
           -- Show driver letters before names - https://winaero.com/blog/show-drive-letters-before-drive-names-in-this-pc-computer-folder/ 
@@ -96,9 +93,74 @@ let filesystem: List lib.types.FilesystemDecl = [
     {
       ensure = lib.types.EnsureType.Present,
       path = "${context.storePath}",
+      name = "cleanup-downloads.ps1",
+      text =
+        ''
+        $Path = "$env:USERPROFILE\Downloads"
+        $Daysback = "-60"
+
+        $CurrentDate = Get-Date
+        $DatetoDelete = $CurrentDate.AddDays($Daysback)
+        Get-ChildItem $Path | Where-Object { $_.LastWriteTime -lt $DatetoDelete } | Remove-Item
+        '',
+    },
+    {
+      ensure = lib.types.EnsureType.Present,
+      path = "${context.storePath}",
       name = "updater-script.ps1",
       text =
         ''
+        '',
+    },
+    {
+      ensure = lib.types.EnsureType.Present,
+      path = "${context.storePath}",
+      name = "scheduled_task-cleanup-downloads.xml",
+      text =
+        ''
+        <?xml version="1.0" encoding="UTF-16"?>
+        <Task version="1.2" xmlns="http://schemas.microsoft.com/windows/2004/02/mit/task">
+          <Triggers>
+            <CalendarTrigger>
+              <StartBoundary>2020-08-10T00:00:00</StartBoundary>
+              <Enabled>true</Enabled>
+              <ScheduleByDay>
+                <DaysInterval>1</DaysInterval>
+              </ScheduleByDay>
+            </CalendarTrigger>
+          </Triggers>
+          <Principals>
+            <Principal id="Author">
+              <LogonType>InteractiveToken</LogonType>
+              <RunLevel>LeastPrivilege</RunLevel>
+            </Principal>
+          </Principals>
+          <Settings>
+            <MultipleInstancesPolicy>IgnoreNew</MultipleInstancesPolicy>
+            <DisallowStartIfOnBatteries>true</DisallowStartIfOnBatteries>
+            <StopIfGoingOnBatteries>true</StopIfGoingOnBatteries>
+            <AllowHardTerminate>true</AllowHardTerminate>
+            <StartWhenAvailable>true</StartWhenAvailable>
+            <RunOnlyIfNetworkAvailable>false</RunOnlyIfNetworkAvailable>
+            <IdleSettings>
+              <StopOnIdleEnd>true</StopOnIdleEnd>
+              <RestartOnIdle>false</RestartOnIdle>
+            </IdleSettings>
+            <AllowStartOnDemand>true</AllowStartOnDemand>
+            <Enabled>true</Enabled>
+            <Hidden>false</Hidden>
+            <RunOnlyIfIdle>false</RunOnlyIfIdle>
+            <WakeToRun>false</WakeToRun>
+            <ExecutionTimeLimit>PT4H</ExecutionTimeLimit>
+            <Priority>7</Priority>
+          </Settings>
+          <Actions Context="Author">
+            <Exec>
+              <Command>powershell.exe</Command>
+              <Arguments>-File "${context.storePath}/cleanup-downloads.ps1"</Arguments>
+            </Exec>
+          </Actions>
+        </Task>
         '',
     },
     {
@@ -151,7 +213,7 @@ let filesystem: List lib.types.FilesystemDecl = [
           </Actions>
         </Task>
         '',
-    }
+    },
   ]
 
   let activationHooks: List lib.types.ActivationHookDecl = [
@@ -171,10 +233,14 @@ let filesystem: List lib.types.FilesystemDecl = [
       ],
     },
 
-    -- Activation hook to register the scheduled task to update the host
+    -- Activation hooks to register scheduled tasks
     {
       command = "powershell.exe",
       args = [ "-Command", "Register-ScheduledTask -TaskName 'DecWinC - User Updater' -Xml (get-content '${context.storePath}/scheduled_task-updater.xml' | out-string) -Force" ],
+    },
+    {
+      command = "powershell.exe",
+      args = [ "-Command", "Register-ScheduledTask -TaskName 'Cleanup old Downloads' -Xml (get-content '${context.storePath}/scheduled_task-cleanup-downloads.xml' | out-string) -Force" ],
     },
 
     (lib.windowsRegistry.makeActivationHook "${context.storePath}/registry.reg"),
