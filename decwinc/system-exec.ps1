@@ -7,8 +7,10 @@ param (
 Set-StrictMode -Version 3
 $ErrorActionPreference = "Stop"
 
-$dhallConfigPath = "${PSScriptRoot}/dhall-config/system-config.dhall"
-$jsonConfigPath = "${PSScriptRoot}/system-config.json"
+$environmentName = "system"
+
+$dhallConfigPath = "${PSScriptRoot}/dhall-config/$environmentName-config.dhall"
+$jsonConfigPath = "${PSScriptRoot}/$environmentName-config.json"
 
 
 Write-Output 'Rendering Dhall configuration to a JSON declaration...'
@@ -25,14 +27,23 @@ if ($proc.ExitCode -ne 0) {
 
 
 if (!$renderOnly) {
-    Write-Output 'Realising JSON declaration in the system environment...'
+    Write-Output "Realising JSON declaration in the $environmentName environment..."
+
+    # Build DecWinC
+    $proc = Start-Process "cargo" @( 'build', `
+            '--manifest-path', "${PSScriptRoot}/decwinc/Cargo.toml", `
+            '--release'
+        ) -NoNewWindow -PassThru -Wait
+
+    if ($proc.ExitCode -ne 0) {
+        throw 'Command failed'
+    }
+
 
     # Instantiate the JSON declaration
-    $proc = Start-Process "cargo" @( 'run', `
-            '--manifest-path', "${PSScriptRoot}/decwinc/Cargo.toml", `
-            '--release', '--', `
-            '--config', $jsonConfigPath `
-        ) -NoNewWindow -PassThru -Wait
+    $proc = Start-Process "${PSScriptRoot}/decwinc/target/release/decwinc.exe" `
+        @( '--config', $jsonConfigPath ) `
+        -NoNewWindow -PassThru -Wait
 
     if ($proc.ExitCode -ne 0) {
         throw 'Command failed'

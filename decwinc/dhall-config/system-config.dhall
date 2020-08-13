@@ -55,9 +55,6 @@ let filesystem: List lib.types.FilesystemDecl = [
           , type = "dword"
           , value = "00000000"
           },
-          
-          
-
 
         -- -- Set system scoped environment variables
         -- [

@@ -47,7 +47,7 @@ fn instantiate_config(cfg: &config::Config) -> Result<(), String> {
 
     for fs_decl in &cfg.filesystem {
         println!(
-            "[filesystem_declaration] {:?} {:?}",
+            "[filesystem_declaration] path={:?}, filename={:?}",
             &fs_decl.path, fs_decl.name
         );
 
