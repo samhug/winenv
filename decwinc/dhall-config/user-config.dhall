@@ -101,7 +101,7 @@ let filesystem: List lib.types.FilesystemDecl = [
 
         $CurrentDate = Get-Date
         $DatetoDelete = $CurrentDate.AddDays($Daysback)
-        Get-ChildItem $Path | Where-Object { $_.LastWriteTime -lt $DatetoDelete } | Remove-Item
+        Get-ChildItem $Path | Where-Object { $_.LastWriteTime -lt $DatetoDelete } | Remove-Item -Recurse -Force -Confirm:$false
         '',
     },
     {
