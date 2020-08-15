@@ -1,5 +1,5 @@
 param (
-    [switch]$renderOnly = $false
+    [switch]$evalOnly = $false
 )
 
 Set-StrictMode -Version 3
@@ -7,7 +7,7 @@ $ErrorActionPreference = "Stop"
 
 $context = @{
     storePath = "$env:LOCALAPPDATA\winenv\store";
-    user = @{ profilePath = $env:USERPROFILE; };
+    user      = @{ profilePath = $env:USERPROFILE; };
 }
 
 $contextFile = "$PSScriptRoot/winenv-config/user-context.dhall"
@@ -24,7 +24,7 @@ trap { Remove-Item $tempJSONFile -Confirm:$false }
 $proc = Start-Process "$PSScriptRoot/tools/dhall-to-json/json-to-dhall-x86_64.exe" @(
     "--file", "$tempJSONFile",
     "--output", "$contextFile"
-    ) -NoNewWindow -PassThru -Wait
+) -NoNewWindow -PassThru -Wait
 
 if ($proc.ExitCode -ne 0) {
     throw 'Command failed'
@@ -32,7 +32,8 @@ if ($proc.ExitCode -ne 0) {
 
 # Instantiate the Dhall config
 & "$PSScriptRoot/tools/wrapper-script.ps1" `
-    -Config "$configFile"
+    -Config "$configFile" `
+    -EvalOnly:$evalOnly
 
     
 # Clean up temporary files

@@ -1,6 +1,7 @@
 # WinEnv
 
-*Inspired by [NixOS](https://nixos.org/), [Home Manager](https://github.com/rycee/home-manager), and [PowerShell Desired State Configuration](https://docs.microsoft.com/en-us/powershell/scripting/dsc/overview/overview?view=powershell-7)*
+*This project is a work in progress and I don't want to be responsible for what you do to your computer with it*
+
 
 ## Overview
 
@@ -12,11 +13,17 @@ This project has two primary components: the executor and the configuration libr
 - ### [Configuration Library](https://github.com/samhug/winenv/tree/master/winenv-config)
     - A collection of expressions written in [Dhall](https://dhall-lang.org/) that can be composed to allow flexible and extensible declaration 
 
+- The files `winenv-config/system-config.dhall` and `winenv-config/user-config.dhall` contain the base expressions for the system and user environments
+
+- The two powershell scripts in the project root `system-exec.ps1` and `user-exec.ps1` are the entrypoints for instantiating the system and user environments
+    - These scripts will generate a context object containing information about the environment and save it to `winenv-config/system-context.dhall` or `winenv-config/user-context.dhall`
+    - They will then run `tools/wrapper-script.ps1` passing either `winenv-config/system-config.dhall` or `winenv-config/user-config.dhall` to be evaluated and instantiated
+
 
 ## Challenges:
 - Windows Registry
     - Registry values containing an array of bytes where different subsets of the array control distinct features (See for [example](https://superuser.com/questions/253249/windows-registry-entries-for-default-explorer-view))
-        - Currently we have no declarative granularity smaller than the registry key value as a whole
+        - Currently there is no declarative granularity smaller than the registry value as a whole
 
 
 ## Aspects of Windows I want to manage declaratively:
@@ -84,3 +91,8 @@ This project has two primary components: the executor and the configuration libr
     - https://docs.microsoft.com/en-us/powershell/scripting/dsc/reference/resources/windows/registryresource?view=powershell-7
     - https://markgossa.blogspot.com/2017/08/learn-powershell-dsc-part-1.html
     - https://github.com/dsccommunity/ComputerManagementDsc
+
+---
+
+
+*Inspired by [NixOS](https://nixos.org/), [Home Manager](https://github.com/rycee/home-manager), and [PowerShell Desired State Configuration](https://docs.microsoft.com/en-us/powershell/scripting/dsc/overview/overview?view=powershell-7)*

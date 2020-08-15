@@ -1,9 +1,9 @@
 
 param (
-    [switch]$renderOnly = $false
-    )
+    [switch]$evalOnly = $false
+)
     
-    # requires -RunAsAdministrator
+# requires -RunAsAdministrator
 Set-StrictMode -Version 3
 $ErrorActionPreference = "Stop"
 
@@ -25,10 +25,14 @@ trap { Remove-Item $tempJSONFile -Confirm:$false }
 $proc = Start-Process "$PSScriptRoot/tools/dhall-to-json/json-to-dhall-x86_64.exe" @(
     "--file", "$tempJSONFile",
     "--output", "$contextFile"
-    ) -NoNewWindow -PassThru -Wait
+) -NoNewWindow -PassThru -Wait
 
 if ($proc.ExitCode -ne 0) {
     throw 'Command failed'
+}
+
+if ($evalOnly) {
+    throw 'FIXME: broken'
 }
 
 # Instantiate the Dhall config
