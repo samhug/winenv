@@ -1,12 +1,15 @@
 -- 
 -- Language Reference: https://docs.dhall-lang.org/
 
+-- import our library of types and functions
 let lib = ./lib/package.dhall
 
 let context = ./system-context.dhall
 
 
 let filesystem: List lib.types.FilesystemDecl = [
+
+    -- Manage the system hosts file
     {
       ensure = lib.types.EnsureType.Present,
       path = "c:/windows/system32/drivers/etc",
@@ -17,61 +20,73 @@ let filesystem: List lib.types.FilesystemDecl = [
         { ip = "10.90.0.1", name = "workspace-home.snet.sa.m-h.ug" },
       ],
     },
+
+    -- Generate a .reg file that we will import into the Windows Registry using an activation hook
     {
       ensure = lib.types.EnsureType.Present,
       path = "${context.storePath}",
       name = "registry.reg",
-      -- text = lib.windowsRegistry.makeRegistryFile (lib.prelude.List.concat lib.windowsRegistry.RegistryEntryType [
       text = lib.windowsRegistry.makeRegistryFile [
 
-          -- Disable Windows 10 Timeline - https://winaero.com/blog/disable-timeline-windows-10-group-policy/
-          { path = "HKEY_LOCAL_MACHINE\\SOFTWARE\\Policies\\Microsoft\\Windows\\System"
-          , name = "EnableActivityFeed"
-          , type = "dword"
-          , value = "00000000"
-          },
+        -- Make Windows expect the hardware clock to be set to UTC, linux
+        -- typically expects this so its when dual-booting
+        { path = "HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Control\\TimeZoneInformation"
+        , name = "RealTimeIsUniversal"
+        , type = "qword"
+        , value = "00000001"
+        },
 
-          -- Disable logon screen background image - https://winaero.com/blog/disable-logon-screen-background-image-in-windows-10-without-using-third-party-tools/
-          { path = "HKEY_LOCAL_MACHINE\\SOFTWARE\\Policies\\Microsoft\\Windows\\System"
-          , name = "DisableLogonBackgroundImage"
-          , type = "dword"
-          , value = "00000001"
-          },
+        -- Disable Windows 10 Timeline - https://winaero.com/blog/disable-timeline-windows-10-group-policy/
+        { path = "HKEY_LOCAL_MACHINE\\SOFTWARE\\Policies\\Microsoft\\Windows\\System"
+        , name = "EnableActivityFeed"
+        , type = "dword"
+        , value = "00000000"
+        },
 
-          -- Disable cortana - https://winaero.com/blog/disable-cortana-in-windows-10-anniversary-update-version-1607/
-          { path = "HKEY_LOCAL_MACHINE\\SOFTWARE\\Policies\\Microsoft\\Windows\\Windows Search"
-          , name = "AllowCortana"
-          , type = "dword"
-          , value = "00000000"
-          },
+        -- Disable logon screen background image - https://winaero.com/blog/disable-logon-screen-background-image-in-windows-10-without-using-third-party-tools/
+        { path = "HKEY_LOCAL_MACHINE\\SOFTWARE\\Policies\\Microsoft\\Windows\\System"
+        , name = "DisableLogonBackgroundImage"
+        , type = "dword"
+        , value = "00000001"
+        },
 
-          -- Disable Windows Telemetry - https://winaero.com/blog/how-to-disable-telemetry-and-data-collection-in-windows-10/
-          -- TODO: Need to also disable services
-          { path = "HKEY_LOCAL_MACHINE\\SOFTWARE\\Policies\\Microsoft\\Windows\\DataCollection"
-          , name = "AllowTelemetry"
-          , type = "dword"
-          , value = "00000000"
-          },
+        -- Disable cortana - https://winaero.com/blog/disable-cortana-in-windows-10-anniversary-update-version-1607/
+        { path = "HKEY_LOCAL_MACHINE\\SOFTWARE\\Policies\\Microsoft\\Windows\\Windows Search"
+        , name = "AllowCortana"
+        , type = "dword"
+        , value = "00000000"
+        },
 
-          -- Disable clipboard history - https://www.majorgeeks.com/content/page/how_to_disable_clipboard_history_in_windows_10.html
-          { path = "HKEY_LOCAL_MACHINE\\SOFTWARE\\Policies\\Microsoft\\Windows\\System"
-          , name = "AllowClipboardHistory"
-          , type = "dword"
-          , value = "00000000"
-          },
+        -- Disable Windows Telemetry - https://winaero.com/blog/how-to-disable-telemetry-and-data-collection-in-windows-10/
+        -- TODO: Need to also disable services
+        { path = "HKEY_LOCAL_MACHINE\\SOFTWARE\\Policies\\Microsoft\\Windows\\DataCollection"
+        , name = "AllowTelemetry"
+        , type = "dword"
+        , value = "00000000"
+        },
 
-        -- -- Set system scoped environment variables
-        -- [
+        -- Disable clipboard history - https://www.majorgeeks.com/content/page/how_to_disable_clipboard_history_in_windows_10.html
+        { path = "HKEY_LOCAL_MACHINE\\SOFTWARE\\Policies\\Microsoft\\Windows\\System"
+        , name = "AllowClipboardHistory"
+        , type = "dword"
+        , value = "00000000"
+        },
 
-        -- ],
+        -- TODO: Set system scoped environment variables
       ]
     },
+
+    -- Example powershell script that we will execute with an activation hook
     {
       ensure = lib.types.EnsureType.Present,
       path = "${context.storePath}",
-      name = "activation-hook.ps1",
-      text = "Write-Host 'Hello from ps1 file'",
+      name = "example-activation-hook.ps1",
+      text =
+        ''
+        Write-Host 'Hello from powershell script'
+        '',
     },
+
     {
       ensure = lib.types.EnsureType.Present,
       path = "${context.storePath}",
@@ -187,7 +202,7 @@ let filesystem: List lib.types.FilesystemDecl = [
       command = "powershell.exe",
       args = [
         "-File",
-        "${context.storePath}/activation-hook.ps1"
+        "${context.storePath}/example-activation-hook.ps1"
       ],
     },
 

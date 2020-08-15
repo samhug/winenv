@@ -17,7 +17,7 @@
     {
       "args": [
         "-File",
-        "c:/ProgramData/decwinc/store/activation-hook.ps1"
+        "c:/ProgramData/decwinc/store/example-activation-hook.ps1"
       ],
       "command": "powershell.exe"
     },
@@ -55,13 +55,13 @@
       "ensure": "Present",
       "name": "registry.reg",
       "path": "c:/ProgramData/decwinc/store",
-      "text": "Windows Registry Editor Version 5.00\n\n[HKEY_LOCAL_MACHINE\\SOFTWARE\\Policies\\Microsoft\\Windows\\System]\n\"EnableActivityFeed\"=dword:00000000\n\n[HKEY_LOCAL_MACHINE\\SOFTWARE\\Policies\\Microsoft\\Windows\\System]\n\"DisableLogonBackgroundImage\"=dword:00000001\n\n[HKEY_LOCAL_MACHINE\\SOFTWARE\\Policies\\Microsoft\\Windows\\Windows Search]\n\"AllowCortana\"=dword:00000000\n\n[HKEY_LOCAL_MACHINE\\SOFTWARE\\Policies\\Microsoft\\Windows\\DataCollection]\n\"AllowTelemetry\"=dword:00000000\n\n[HKEY_LOCAL_MACHINE\\SOFTWARE\\Policies\\Microsoft\\Windows\\System]\n\"AllowClipboardHistory\"=dword:00000000\n"
+      "text": "Windows Registry Editor Version 5.00\n\n[HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Control\\TimeZoneInformation]\n\"RealTimeIsUniversal\"=qword:00000001\n\n[HKEY_LOCAL_MACHINE\\SOFTWARE\\Policies\\Microsoft\\Windows\\System]\n\"EnableActivityFeed\"=dword:00000000\n\n[HKEY_LOCAL_MACHINE\\SOFTWARE\\Policies\\Microsoft\\Windows\\System]\n\"DisableLogonBackgroundImage\"=dword:00000001\n\n[HKEY_LOCAL_MACHINE\\SOFTWARE\\Policies\\Microsoft\\Windows\\Windows Search]\n\"AllowCortana\"=dword:00000000\n\n[HKEY_LOCAL_MACHINE\\SOFTWARE\\Policies\\Microsoft\\Windows\\DataCollection]\n\"AllowTelemetry\"=dword:00000000\n\n[HKEY_LOCAL_MACHINE\\SOFTWARE\\Policies\\Microsoft\\Windows\\System]\n\"AllowClipboardHistory\"=dword:00000000\n"
     },
     {
       "ensure": "Present",
-      "name": "activation-hook.ps1",
+      "name": "example-activation-hook.ps1",
       "path": "c:/ProgramData/decwinc/store",
-      "text": "Write-Host 'Hello from ps1 file'"
+      "text": "Write-Host 'Hello from powershell script'\n"
     },
     {
       "ensure": "Present",

@@ -10,7 +10,7 @@ Optional arguments:
   -c, --config CONFIG  path to config to instantiate
 ```
 
-### ./example_config.json
+### ./example_config.json:
 ```json
 {
     "activationHooks": [],
@@ -19,5 +19,5 @@ Optional arguments:
 ```
 
 ```
-> winenv-exec --config ./example_config.json
+> winenv-exec --config example_config.json
 ```

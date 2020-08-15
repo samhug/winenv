@@ -2,29 +2,8 @@
   "activationHooks": [
     {
       "args": [
-        "/C",
-        "echo hello"
-      ],
-      "command": "cmd"
-    },
-    {
-      "args": [
-        "-Command",
-        "Write-Host 'hello'"
-      ],
-      "command": "powershell.exe"
-    },
-    {
-      "args": [
         "-File",
-        "C:/Users/shug/AppData/Local/decwinc/store/activation-hook.ps1"
-      ],
-      "command": "powershell.exe"
-    },
-    {
-      "args": [
-        "-Command",
-        "Register-ScheduledTask -TaskName 'DecWinC - User Updater' -Xml (get-content 'C:/Users/shug/AppData/Local/decwinc/store/scheduled_task-updater.xml' | out-string) -Force"
+        "C:/Users/shug/AppData/Local/decwinc/store/example-activation-hook.ps1"
       ],
       "command": "powershell.exe"
     },
@@ -58,9 +37,9 @@
     },
     {
       "ensure": "Present",
-      "name": "activation-hook.ps1",
+      "name": "example-activation-hook.ps1",
       "path": "C:/Users/shug/AppData/Local/decwinc/store",
-      "text": "Write-Host 'Hello from ps1 file'"
+      "text": "Write-Host 'Hello from powershell script'\n"
     },
     {
       "ensure": "Present",
@@ -70,21 +49,9 @@
     },
     {
       "ensure": "Present",
-      "name": "updater-script.ps1",
-      "path": "C:/Users/shug/AppData/Local/decwinc/store",
-      "text": ""
-    },
-    {
-      "ensure": "Present",
       "name": "scheduled_task-cleanup-downloads.xml",
       "path": "C:/Users/shug/AppData/Local/decwinc/store",
       "text": "<?xml version=\"1.0\" encoding=\"UTF-16\"?>\n<Task version=\"1.2\" xmlns=\"http://schemas.microsoft.com/windows/2004/02/mit/task\">\n  <Triggers>\n    <CalendarTrigger>\n      <StartBoundary>2020-08-10T00:00:00</StartBoundary>\n      <Enabled>true</Enabled>\n      <ScheduleByDay>\n        <DaysInterval>1</DaysInterval>\n      </ScheduleByDay>\n    </CalendarTrigger>\n  </Triggers>\n  <Principals>\n    <Principal id=\"Author\">\n      <LogonType>InteractiveToken</LogonType>\n      <RunLevel>LeastPrivilege</RunLevel>\n    </Principal>\n  </Principals>\n  <Settings>\n    <MultipleInstancesPolicy>IgnoreNew</MultipleInstancesPolicy>\n    <DisallowStartIfOnBatteries>true</DisallowStartIfOnBatteries>\n    <StopIfGoingOnBatteries>true</StopIfGoingOnBatteries>\n    <AllowHardTerminate>true</AllowHardTerminate>\n    <StartWhenAvailable>true</StartWhenAvailable>\n    <RunOnlyIfNetworkAvailable>false</RunOnlyIfNetworkAvailable>\n    <IdleSettings>\n      <StopOnIdleEnd>true</StopOnIdleEnd>\n      <RestartOnIdle>false</RestartOnIdle>\n    </IdleSettings>\n    <AllowStartOnDemand>true</AllowStartOnDemand>\n    <Enabled>true</Enabled>\n    <Hidden>false</Hidden>\n    <RunOnlyIfIdle>false</RunOnlyIfIdle>\n    <WakeToRun>false</WakeToRun>\n    <ExecutionTimeLimit>PT4H</ExecutionTimeLimit>\n    <Priority>7</Priority>\n  </Settings>\n  <Actions Context=\"Author\">\n    <Exec>\n      <Command>powershell.exe</Command>\n      <Arguments>-File \"C:/Users/shug/AppData/Local/decwinc/store/cleanup-downloads.ps1\"</Arguments>\n    </Exec>\n  </Actions>\n</Task>\n"
-    },
-    {
-      "ensure": "Present",
-      "name": "scheduled_task-updater.xml",
-      "path": "C:/Users/shug/AppData/Local/decwinc/store",
-      "text": "<?xml version=\"1.0\" encoding=\"UTF-16\"?>\n<Task version=\"1.2\" xmlns=\"http://schemas.microsoft.com/windows/2004/02/mit/task\">\n  <Triggers>\n    <CalendarTrigger>\n      <StartBoundary>2020-08-10T00:00:00</StartBoundary>\n      <Enabled>true</Enabled>\n      <ScheduleByDay>\n        <DaysInterval>1</DaysInterval>\n      </ScheduleByDay>\n    </CalendarTrigger>\n  </Triggers>\n  <Principals>\n    <Principal id=\"Author\">\n      <LogonType>InteractiveToken</LogonType>\n      <RunLevel>LeastPrivilege</RunLevel>\n    </Principal>\n  </Principals>\n  <Settings>\n    <MultipleInstancesPolicy>IgnoreNew</MultipleInstancesPolicy>\n    <DisallowStartIfOnBatteries>true</DisallowStartIfOnBatteries>\n    <StopIfGoingOnBatteries>true</StopIfGoingOnBatteries>\n    <AllowHardTerminate>true</AllowHardTerminate>\n    <StartWhenAvailable>true</StartWhenAvailable>\n    <RunOnlyIfNetworkAvailable>false</RunOnlyIfNetworkAvailable>\n    <IdleSettings>\n      <StopOnIdleEnd>true</StopOnIdleEnd>\n      <RestartOnIdle>false</RestartOnIdle>\n    </IdleSettings>\n    <AllowStartOnDemand>true</AllowStartOnDemand>\n    <Enabled>true</Enabled>\n    <Hidden>false</Hidden>\n    <RunOnlyIfIdle>false</RunOnlyIfIdle>\n    <WakeToRun>false</WakeToRun>\n    <ExecutionTimeLimit>PT4H</ExecutionTimeLimit>\n    <Priority>7</Priority>\n  </Settings>\n  <Actions Context=\"Author\">\n    <Exec>\n      <Command>powershell.exe</Command>\n      <Arguments>-File \"C:/Users/shug/AppData/Local/decwinc/store/updater-script.ps1\"</Arguments>\n    </Exec>\n  </Actions>\n</Task>\n"
     }
   ]
 }

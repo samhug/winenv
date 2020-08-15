@@ -1,3 +1,3 @@
 {
-    "vscode-dhall-lsp-server.executable": "decwinc/dhall-config/tools/dhall-lsp-server.exe",
+    "vscode-dhall-lsp-server.executable": "winenv-config/tools/dhall-lsp-server.exe",
 }

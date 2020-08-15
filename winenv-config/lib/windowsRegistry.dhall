@@ -1,7 +1,9 @@
 {-
 windowsRegistry
 -}
-let concatMapSep = https://prelude.dhall-lang.org/Text/concatMapSep
+
+let Prelude = ./prelude.dhall
+
 
 -- https://support.microsoft.com/en-us/help/310516/how-to-add-modify-or-delete-registry-subkeys-and-values-by-using-a-reg
 
@@ -9,7 +11,7 @@ let concatMapSep = https://prelude.dhall-lang.org/Text/concatMapSep
 -- let RegistryValueType = < `dword` | `sz` >
 let RegistryEntryType = { path: Text, name: Text, type: Text, value: Text }
 let makeRegistryFile = \(registryEntries: List RegistryEntryType) -> 
-    let renderedEntries = concatMapSep "\n" RegistryEntryType (\(registryEntry: RegistryEntryType) ->
+    let renderedEntries = Prelude.Text.concatMapSep "\n" RegistryEntryType (\(registryEntry: RegistryEntryType) ->
         -- let renderValue : RegistryValueType → Text
         --     renderValue = \(r: RegistryValueType) merge { dword = "dword:${r.value}" sz = "\"${r.value}\"" } r.type
         -- let valueString = renderValue registryEntry

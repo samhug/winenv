@@ -1,12 +1,13 @@
 {-
 chocolatey
 -}
-let concatMap = https://prelude.dhall-lang.org/Text/concatMap
+
+let Prelude = ./prelude.dhall
 
 let makeConfig
     : List Text → Text
     = \(packages : List Text) ->
-        let pkgsList = concatMap Text (\(package: Text) -> "\n    <package id=\"${package}\" />") packages
+        let pkgsList = Prelude.Text.concatMap Text (\(package: Text) -> "\n    <package id=\"${package}\" />") packages
         in ''
         <?xml version="1.0" encoding="utf-8"?>
         <packages>${pkgsList}
