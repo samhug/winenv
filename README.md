@@ -1,21 +1,41 @@
 # WinEnv
 
+*Inspired by [NixOS](https://nixos.org/), [Home Manager](https://github.com/rycee/home-manager), and [PowerShell Desired State Configuration](https://docs.microsoft.com/en-us/powershell/scripting/dsc/overview/overview?view=powershell-7)*
 
-## Aspects of Microsoft Windows I want to manage declaratively:
+## Overview
+
+This project has two primary components: the executor and the configuration library
+
+- ### [Executor](https://github.com/samhug/winenv/tree/master/winenv-exec)
+    - A small program written in [Rust](https://www.rust-lang.org/) whose goal is to implement a minimal set of primitives for declarativly managing a Windows system.
+
+- ### [Configuration Library](https://github.com/samhug/winenv/tree/master/winenv-config)
+    - A collection of expressions written in [Dhall](https://dhall-lang.org/) that can be composed to allow flexible and extensible declaration 
+
+
+## Challenges:
+- Windows Registry
+    - Registry values containing an array of bytes where different subsets of the array control distinct features (See for [example](https://superuser.com/questions/253249/windows-registry-entries-for-default-explorer-view))
+        - Currently we have no declarative granularity smaller than the registry key value as a whole
+
+
+## Aspects of Windows I want to manage declaratively:
 
 - ### Computer Settings
     - [x] Chocolaty packages
     - [ ] Install & configure Wireguard
-    - [ ] Set environment variables
+    - [ ] Set computer scoped environment variables
         - `HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Session Manager\Environment`
     - [ ] Disable clipboard history
         - https://www.majorgeeks.com/content/page/how_to_disable_clipboard_history_in_windows_10.html
+    - [ ] Scheduled tasks running as admin
+        - [ ] Auto update chocolatey packages?
 
 - ### User Settings
-    - [ ] Set environment variables
+    - [ ] Set user scoped environment variables
         - `HKEY_CURRENT_USER\Environment`
     - [ ] Set wallpaper
-    - [ ] Set Color Theme
+    - [ ] Set color theme
     - [ ] Windows Taskbar
         - [ ] Dock taskbar on right side
             - https://www.tenforums.com/tutorials/57280-change-taskbar-location-screen-windows-10-a.html
@@ -28,7 +48,9 @@
         - Choose which folders appear on Start
             -   Remove "Documents" & "Pictures"
     - [ ] Windows Terminal configuration
+        - `%LOCALAPPDATA%\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\settings.json`
     - [ ] VSCode config & extensions
+        - `%APPDATA%\Code\User\settings.json`
     - [ ] Firefox config & extensions
     - [ ] Default Apps
         - [ ] Web Browser
@@ -40,13 +62,13 @@
         - [ ] Quick access links
     - [ ] AutoHotKey Custom Keyboard Shortcuts
         - [ ] Clipboard AutoTyper
-    - [ ] Task Scheduler
+    - [x] Scheduled tasks running as user
         - [x] Delete old Downloads
-        - [ ]  Facelog
-        - [ ]  Auto chocolatey udpate?
+        - [ ] Facelog
 
 
---
+---
+
 ## Links & Reference Materials:
 *A mostly unorganized dumping ground —*
 
@@ -62,4 +84,3 @@
     - https://docs.microsoft.com/en-us/powershell/scripting/dsc/reference/resources/windows/registryresource?view=powershell-7
     - https://markgossa.blogspot.com/2017/08/learn-powershell-dsc-part-1.html
     - https://github.com/dsccommunity/ComputerManagementDsc
-    - `Find-Module -Name ComputerManagementDsc -Repository PSGallery | Install-Module`
