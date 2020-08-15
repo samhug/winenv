@@ -3,21 +3,21 @@
     {
       "args": [
         "-File",
-        "C:/Users/shug/AppData/Local/decwinc/store/example-activation-hook.ps1"
+        "C:/Users/shug/AppData/Local/winenv/store/example-activation-hook.ps1"
       ],
       "command": "powershell.exe"
     },
     {
       "args": [
         "-Command",
-        "Register-ScheduledTask -TaskName 'Cleanup old Downloads' -Xml (get-content 'C:/Users/shug/AppData/Local/decwinc/store/scheduled_task-cleanup-downloads.xml' | out-string) -Force"
+        "Register-ScheduledTask -TaskName 'Cleanup old Downloads' -Xml (get-content 'C:/Users/shug/AppData/Local/winenv/store/scheduled_task-cleanup-downloads.xml' | out-string) -Force"
       ],
       "command": "powershell.exe"
     },
     {
       "args": [
         "import",
-        "C:/Users/shug/AppData/Local/decwinc/store/registry.reg"
+        "C:/Users/shug/AppData/Local/winenv/store/registry.reg"
       ],
       "command": "reg"
     }
@@ -32,26 +32,26 @@
     {
       "ensure": "Present",
       "name": "registry.reg",
-      "path": "C:/Users/shug/AppData/Local/decwinc/store",
+      "path": "C:/Users/shug/AppData/Local/winenv/store",
       "text": "Windows Registry Editor Version 5.00\n\n[HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer]\n\"ShowDriveLettersFirst\"=dword:00000004\n\n[HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced]\n\"Hidden\"=dword:00000001\n\n[HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced]\n\"HideFileExt\"=dword:00000000\n\n[HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced]\n\"DisallowShaking\"=dword:00000001\n\n[HKEY_CURRENT_USER\\SOFTWARE\\Policies\\Microsoft\\Windows\\CurrentVersion\\PushNotifications]\n\"NoTileApplicationNotification\"=dword:00000001\n\n[HKEY_CURRENT_USER\\Software\\Policies\\Microsoft\\Windows\\Explorer]\n\"HidePeopleBar\"=dword:00000001\n"
     },
     {
       "ensure": "Present",
       "name": "example-activation-hook.ps1",
-      "path": "C:/Users/shug/AppData/Local/decwinc/store",
+      "path": "C:/Users/shug/AppData/Local/winenv/store",
       "text": "Write-Host 'Hello from powershell script'\n"
     },
     {
       "ensure": "Present",
       "name": "cleanup-downloads.ps1",
-      "path": "C:/Users/shug/AppData/Local/decwinc/store",
+      "path": "C:/Users/shug/AppData/Local/winenv/store",
       "text": "$Path = \"$env:USERPROFILE\\Downloads\"\n$Daysback = \"-60\"\n\n$CurrentDate = Get-Date\n$DatetoDelete = $CurrentDate.AddDays($Daysback)\nGet-ChildItem $Path | Where-Object { $_.LastWriteTime -lt $DatetoDelete } | Remove-Item -Recurse -Force -Confirm:$false\n"
     },
     {
       "ensure": "Present",
       "name": "scheduled_task-cleanup-downloads.xml",
-      "path": "C:/Users/shug/AppData/Local/decwinc/store",
-      "text": "<?xml version=\"1.0\" encoding=\"UTF-16\"?>\n<Task version=\"1.2\" xmlns=\"http://schemas.microsoft.com/windows/2004/02/mit/task\">\n  <Triggers>\n    <CalendarTrigger>\n      <StartBoundary>2020-08-10T00:00:00</StartBoundary>\n      <Enabled>true</Enabled>\n      <ScheduleByDay>\n        <DaysInterval>1</DaysInterval>\n      </ScheduleByDay>\n    </CalendarTrigger>\n  </Triggers>\n  <Principals>\n    <Principal id=\"Author\">\n      <LogonType>InteractiveToken</LogonType>\n      <RunLevel>LeastPrivilege</RunLevel>\n    </Principal>\n  </Principals>\n  <Settings>\n    <MultipleInstancesPolicy>IgnoreNew</MultipleInstancesPolicy>\n    <DisallowStartIfOnBatteries>true</DisallowStartIfOnBatteries>\n    <StopIfGoingOnBatteries>true</StopIfGoingOnBatteries>\n    <AllowHardTerminate>true</AllowHardTerminate>\n    <StartWhenAvailable>true</StartWhenAvailable>\n    <RunOnlyIfNetworkAvailable>false</RunOnlyIfNetworkAvailable>\n    <IdleSettings>\n      <StopOnIdleEnd>true</StopOnIdleEnd>\n      <RestartOnIdle>false</RestartOnIdle>\n    </IdleSettings>\n    <AllowStartOnDemand>true</AllowStartOnDemand>\n    <Enabled>true</Enabled>\n    <Hidden>false</Hidden>\n    <RunOnlyIfIdle>false</RunOnlyIfIdle>\n    <WakeToRun>false</WakeToRun>\n    <ExecutionTimeLimit>PT4H</ExecutionTimeLimit>\n    <Priority>7</Priority>\n  </Settings>\n  <Actions Context=\"Author\">\n    <Exec>\n      <Command>powershell.exe</Command>\n      <Arguments>-File \"C:/Users/shug/AppData/Local/decwinc/store/cleanup-downloads.ps1\"</Arguments>\n    </Exec>\n  </Actions>\n</Task>\n"
+      "path": "C:/Users/shug/AppData/Local/winenv/store",
+      "text": "<?xml version=\"1.0\" encoding=\"UTF-16\"?>\n<Task version=\"1.2\" xmlns=\"http://schemas.microsoft.com/windows/2004/02/mit/task\">\n  <Triggers>\n    <CalendarTrigger>\n      <StartBoundary>2020-08-10T00:00:00</StartBoundary>\n      <Enabled>true</Enabled>\n      <ScheduleByDay>\n        <DaysInterval>1</DaysInterval>\n      </ScheduleByDay>\n    </CalendarTrigger>\n  </Triggers>\n  <Principals>\n    <Principal id=\"Author\">\n      <LogonType>InteractiveToken</LogonType>\n      <RunLevel>LeastPrivilege</RunLevel>\n    </Principal>\n  </Principals>\n  <Settings>\n    <MultipleInstancesPolicy>IgnoreNew</MultipleInstancesPolicy>\n    <DisallowStartIfOnBatteries>true</DisallowStartIfOnBatteries>\n    <StopIfGoingOnBatteries>true</StopIfGoingOnBatteries>\n    <AllowHardTerminate>true</AllowHardTerminate>\n    <StartWhenAvailable>true</StartWhenAvailable>\n    <RunOnlyIfNetworkAvailable>false</RunOnlyIfNetworkAvailable>\n    <IdleSettings>\n      <StopOnIdleEnd>true</StopOnIdleEnd>\n      <RestartOnIdle>false</RestartOnIdle>\n    </IdleSettings>\n    <AllowStartOnDemand>true</AllowStartOnDemand>\n    <Enabled>true</Enabled>\n    <Hidden>false</Hidden>\n    <RunOnlyIfIdle>false</RunOnlyIfIdle>\n    <WakeToRun>false</WakeToRun>\n    <ExecutionTimeLimit>PT4H</ExecutionTimeLimit>\n    <Priority>7</Priority>\n  </Settings>\n  <Actions Context=\"Author\">\n    <Exec>\n      <Command>powershell.exe</Command>\n      <Arguments>-File \"C:/Users/shug/AppData/Local/winenv/store/cleanup-downloads.ps1\"</Arguments>\n    </Exec>\n  </Actions>\n</Task>\n"
     }
   ]
 }

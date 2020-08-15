@@ -1,2 +1,2 @@
-{ storePath = "c:/ProgramData/decwinc/store"
+{ storePath = "c:/ProgramData/winenv/store"
 }
