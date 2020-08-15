@@ -1,3 +1,0 @@
-{
-    "vscode-dhall-lsp-server.executable": "winenv-config/tools/dhall-lsp-server.exe",
-}
