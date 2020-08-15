@@ -1,25 +1,31 @@
 mod config;
 
 use gumdrop::Options;
-use std::path::Path;
-
-use std::io::prelude::*;
+use std::fs::{self, File};
+use std::io::{stdin, BufReader, Read, Write};
 
 #[derive(Debug, Options)]
 struct MyOptions {
     #[options(help = "print help message")]
     help: bool,
 
-    #[options(help = "path to config to instantiate", required)]
-    config: String,
+    #[options(help = "read config from file instead of stdin")]
+    config: Option<String>,
 }
 
 fn main() {
     let opts = MyOptions::parse_args_default_or_exit();
 
-    let config_path = Path::new(&opts.config);
-
-    let cfg = parse_config(config_path).unwrap_or_else(|err| {
+    let cfg = match opts.config {
+        Some(path) => {
+            let reader = File::open(&path)
+                .map(|file| BufReader::new(file))
+                .expect(&format!("unable to read config file ({})", path));
+            parse_config(reader)
+        }
+        None => parse_config(stdin().lock()),
+    }
+    .unwrap_or_else(|err| {
         eprintln!("config error:\n{}", err);
         std::process::exit(1);
     });
@@ -30,21 +36,14 @@ fn main() {
     });
 }
 
-fn parse_config(path: &Path) -> Result<config::Config, String> {
-    // Open the file in read-only mode with buffer.
-    let file =
-        std::fs::File::open(path).map_err(|err| format!("unable to open config file: {}", err))?;
-    let reader = std::io::BufReader::new(file);
-
-    // Read the JSON contents of the file as an instance of `Config`.
+// Read the JSON contents of a reader and return a an instance of Config.
+fn parse_config(reader: impl Read) -> Result<config::Config, String> {
     serde_json::from_reader(reader).map_err(|err| err.to_string())
-
-    // serde_dhall::from_file(path).parse().map_err(|err| err.to_string())
 }
 
 fn instantiate_config(cfg: &config::Config) -> Result<(), String> {
-    // println!("parsed config:\n{:#?}", cfg);
 
+    // Instantiate filesystem declarations
     for fs_decl in &cfg.filesystem {
         println!(
             "[filesystem_declaration] path={:?}, filename={:?}",
@@ -53,18 +52,19 @@ fn instantiate_config(cfg: &config::Config) -> Result<(), String> {
 
         match fs_decl.ensure {
             config::Ensure::Absent => {
+                // TODO: support ensuring absence (deleting files)
                 unimplemented!();
             }
             config::Ensure::Present => {
                 let mut path = std::path::PathBuf::from(&fs_decl.path);
 
-                std::fs::create_dir_all(&path)
+                fs::create_dir_all(&path)
                     .map_err(|err| format!("unable to create parent directory: {}", err))?;
 
                 path.push(&fs_decl.name);
 
-                let mut file = std::fs::File::create(&path)
-                    .map_err(|err| format!("unable to open file: {}", err))?;
+                let mut file =
+                    File::create(&path).map_err(|err| format!("unable to open file: {}", err))?;
                 file.write_all(fs_decl.text.as_deref().unwrap().as_bytes())
                     .map_err(|err| format!("unable to write to file: {}", err))?;
             }
@@ -73,6 +73,7 @@ fn instantiate_config(cfg: &config::Config) -> Result<(), String> {
         println!("SUCCESS");
     }
 
+    // Execute activation hooks
     for ah_decl in &cfg.activation_hooks {
         println!(
             "[activation_hook] {:?} {:?}",
