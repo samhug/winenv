@@ -5,47 +5,35 @@ param (
 Set-StrictMode -Version 3
 $ErrorActionPreference = "Stop"
 
-$environmentName = "user"
+$context = @{
+    storePath = "$env:LOCALAPPDATA\winenv\store";
+    user = @{ profilePath = $env:USERPROFILE; };
+}
 
-$dhallConfigPath = "${PSScriptRoot}/winenv-config/$environmentName-config.dhall"
-$jsonConfigPath = "${PSScriptRoot}/$environmentName-config.json"
+$contextFile = "$PSScriptRoot/winenv-config/user-context.dhall"
+$configFile = "$PSScriptRoot/winenv-config/user-config.dhall"
+
+# Create a temporary file to save our JSON context object to
+$tempJSONFile = New-TemporaryFile
+trap { Remove-Item $tempJSONFile -Confirm:$false }
+
+[System.IO.File]::WriteAllLines($tempJSONFile, @((ConvertTo-Json -Compress $context)))
 
 
-Write-Output 'Rendering Dhall configuration to a JSON declaration...'
-
-# Render Dhall configuration to a JSON declaration
-$proc = Start-Process "${PSScriptRoot}/winenv-config/tools/dhall-to-json.exe" @( `
-        '--file', $dhallConfigPath, `
-        '--output', $jsonConfigPath `
+# Translate the JSON file to Dhall
+$proc = Start-Process "$PSScriptRoot/tools/dhall-to-json/json-to-dhall-x86_64.exe" @(
+    "--file", "$tempJSONFile",
+    "--output", "$contextFile"
     ) -NoNewWindow -PassThru -Wait
 
 if ($proc.ExitCode -ne 0) {
     throw 'Command failed'
 }
 
+# Instantiate the Dhall config
+& "$PSScriptRoot/tools/wrapper-script.ps1" `
+    -Config "$configFile"
 
-if (!$renderOnly) {
-    Write-Output "Realising JSON declaration in the $environmentName environment..."
-
-    # Build winenv-exec
-    $proc = Start-Process "cargo" @( 'build', `
-            '--manifest-path', "${PSScriptRoot}/winenv-exec/Cargo.toml", `
-            '--release'
-        ) -NoNewWindow -PassThru -Wait
-
-    if ($proc.ExitCode -ne 0) {
-        throw 'Command failed'
-    }
-
-
-    # Instantiate the JSON declaration
-    $proc = Start-Process "${PSScriptRoot}/winenv-exec/target/release/winenv-exec.exe" `
-        @( '--config', $jsonConfigPath ) `
-        -NoNewWindow -PassThru -Wait
-
-    if ($proc.ExitCode -ne 0) {
-        throw 'Command failed'
-    }
-}
-
-Write-Output 'Done!'
+    
+# Clean up temporary files
+Remove-Item $tempJSONFile -Confirm:$false
