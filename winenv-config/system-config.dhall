@@ -16,7 +16,7 @@ let filesystem: List lib.types.FilesystemDecl = [
       name = "hosts",
       text = lib.hostsFile.makeHostsFile [
         -- Block Facebook by resolving the domain to 0.0.0.0
-        { ip = "0.0.0.0", name = "www.facebook.com" },
+        -- { ip = "0.0.0.0", name = "www.facebook.com" },
         { ip = "10.90.0.1", name = "workspace-home.snet.sa.m-h.ug" },
       ],
     },
