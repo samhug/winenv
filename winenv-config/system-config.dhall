@@ -6,6 +6,48 @@ let lib = ./lib/package.dhall
 
 let context = ./system-context.dhall
 
+let registryEntries: List lib.windowsRegistry.RegistryEntry = [
+
+    -- Make Windows expect the hardware clock to be set to UTC, linux
+    -- typically expects this so its when dual-booting
+    { path = "HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Control\\TimeZoneInformation"
+    , name = "RealTimeIsUniversal"
+    , value = lib.windowsRegistry.RegistryValue.DWORD "00000001"
+    },
+
+    -- Disable Windows 10 Timeline - https://winaero.com/blog/disable-timeline-windows-10-group-policy/
+    { path = "HKEY_LOCAL_MACHINE\\SOFTWARE\\Policies\\Microsoft\\Windows\\System"
+    , name = "EnableActivityFeed"
+    , value = lib.windowsRegistry.RegistryValue.DWORD "00000000"
+    },
+
+    -- Disable logon screen background image - https://winaero.com/blog/disable-logon-screen-background-image-in-windows-10-without-using-third-party-tools/
+    { path = "HKEY_LOCAL_MACHINE\\SOFTWARE\\Policies\\Microsoft\\Windows\\System"
+    , name = "DisableLogonBackgroundImage"
+    , value = lib.windowsRegistry.RegistryValue.DWORD "00000001"
+    },
+
+    -- Disable cortana - https://winaero.com/blog/disable-cortana-in-windows-10-anniversary-update-version-1607/
+    { path = "HKEY_LOCAL_MACHINE\\SOFTWARE\\Policies\\Microsoft\\Windows\\Windows Search"
+    , name = "AllowCortana"
+    , value = lib.windowsRegistry.RegistryValue.DWORD "00000000"
+    },
+
+    -- Disable Windows Telemetry - https://winaero.com/blog/how-to-disable-telemetry-and-data-collection-in-windows-10/
+    -- TODO: Need to also disable services
+    { path = "HKEY_LOCAL_MACHINE\\SOFTWARE\\Policies\\Microsoft\\Windows\\DataCollection"
+    , name = "AllowTelemetry"
+    , value = lib.windowsRegistry.RegistryValue.DWORD "00000000"
+    },
+
+    -- Disable clipboard history - https://www.majorgeeks.com/content/page/how_to_disable_clipboard_history_in_windows_10.html
+    { path = "HKEY_LOCAL_MACHINE\\SOFTWARE\\Policies\\Microsoft\\Windows\\System"
+    , name = "AllowClipboardHistory"
+    , value = lib.windowsRegistry.RegistryValue.DWORD "00000000"
+    }
+
+    -- TODO: Set system scoped environment variables
+]
 
 let filesystem: List lib.types.FilesystemDecl = [
 
@@ -18,8 +60,8 @@ let filesystem: List lib.types.FilesystemDecl = [
         -- Block Facebook by resolving the domain to 0.0.0.0
         -- { ip = "0.0.0.0", name = "www.facebook.com" },
         { ip = "10.90.0.1", name = "workspace-home.snet.sa.m-h.ug" },
-        { ip = "10.0.1.20", name = "bootstrap.snet.sa.m-h.ug" },
-      ],
+        { ip = "10.0.1.20", name = "bootstrap.snet.sa.m-h.ug" }
+      ]
     },
 
     -- Generate a .reg file that we will import into the Windows Registry using an activation hook
@@ -27,54 +69,7 @@ let filesystem: List lib.types.FilesystemDecl = [
       ensure = lib.types.EnsureType.Present,
       path = "${context.storePath}",
       name = "registry.reg",
-      text = lib.windowsRegistry.makeRegistryFile [
-
-        -- Make Windows expect the hardware clock to be set to UTC, linux
-        -- typically expects this so its when dual-booting
-        { path = "HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Control\\TimeZoneInformation"
-        , name = "RealTimeIsUniversal"
-        , type = "qword"
-        , value = "00000001"
-        },
-
-        -- Disable Windows 10 Timeline - https://winaero.com/blog/disable-timeline-windows-10-group-policy/
-        { path = "HKEY_LOCAL_MACHINE\\SOFTWARE\\Policies\\Microsoft\\Windows\\System"
-        , name = "EnableActivityFeed"
-        , type = "dword"
-        , value = "00000000"
-        },
-
-        -- Disable logon screen background image - https://winaero.com/blog/disable-logon-screen-background-image-in-windows-10-without-using-third-party-tools/
-        { path = "HKEY_LOCAL_MACHINE\\SOFTWARE\\Policies\\Microsoft\\Windows\\System"
-        , name = "DisableLogonBackgroundImage"
-        , type = "dword"
-        , value = "00000001"
-        },
-
-        -- Disable cortana - https://winaero.com/blog/disable-cortana-in-windows-10-anniversary-update-version-1607/
-        { path = "HKEY_LOCAL_MACHINE\\SOFTWARE\\Policies\\Microsoft\\Windows\\Windows Search"
-        , name = "AllowCortana"
-        , type = "dword"
-        , value = "00000000"
-        },
-
-        -- Disable Windows Telemetry - https://winaero.com/blog/how-to-disable-telemetry-and-data-collection-in-windows-10/
-        -- TODO: Need to also disable services
-        { path = "HKEY_LOCAL_MACHINE\\SOFTWARE\\Policies\\Microsoft\\Windows\\DataCollection"
-        , name = "AllowTelemetry"
-        , type = "dword"
-        , value = "00000000"
-        },
-
-        -- Disable clipboard history - https://www.majorgeeks.com/content/page/how_to_disable_clipboard_history_in_windows_10.html
-        { path = "HKEY_LOCAL_MACHINE\\SOFTWARE\\Policies\\Microsoft\\Windows\\System"
-        , name = "AllowClipboardHistory"
-        , type = "dword"
-        , value = "00000000"
-        },
-
-        -- TODO: Set system scoped environment variables
-      ]
+      text = lib.windowsRegistry.makeRegistryFile registryEntries
     },
 
     -- Example powershell script that we will execute with an activation hook
@@ -85,7 +80,7 @@ let filesystem: List lib.types.FilesystemDecl = [
       text =
         ''
         Write-Host 'Hello from powershell script'
-        '',
+        ''
     },
 
     -- Generate a Chocolatey packages config file
@@ -114,9 +109,9 @@ let filesystem: List lib.types.FilesystemDecl = [
         -- "vscode",
         "which",
         "winmerge",
-        "winscp",
-      ],
-    },
+        "winscp"
+      ]
+    }
 
   ]
 
@@ -129,7 +124,7 @@ let filesystem: List lib.types.FilesystemDecl = [
       args = [
         "-File",
         "${context.storePath}/example-activation-hook.ps1"
-      ],
+      ]
     },
 
     -- Activation hook to install packages specified in our generated Chocolatey config 
@@ -139,11 +134,11 @@ let filesystem: List lib.types.FilesystemDecl = [
         "install",
         "--confirm",
         "${context.storePath}/chocolatey-packages.config"
-      ],
+      ]
     },
 
     -- Activation hook to import our generated registry file
-    (lib.windowsRegistry.makeActivationHook "${context.storePath}/registry.reg"),
+    (lib.windowsRegistry.makeActivationHook "${context.storePath}/registry.reg")
 
   ]
 

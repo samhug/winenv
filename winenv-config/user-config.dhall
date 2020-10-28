@@ -6,6 +6,57 @@ let lib = ./lib/package.dhall
 
 let context = ./user-context.dhall
 
+let registryEntries: List lib.windowsRegistry.RegistryEntry = [
+
+    -- Show driver letters before names - https://winaero.com/blog/show-drive-letters-before-drive-names-in-this-pc-computer-folder/ 
+    { path = "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer"
+    , name = "ShowDriveLettersFirst"
+    , value = lib.windowsRegistry.RegistryValue.DWORD "00000004"
+    },
+
+    -- Show hidden files
+    { path = "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced"
+    , name = "Hidden"
+    , value = lib.windowsRegistry.RegistryValue.DWORD "00000001"
+    },
+
+    -- Don't hide file extensions
+    { path = "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced"
+    , name = "HideFileExt"
+    , value = lib.windowsRegistry.RegistryValue.DWORD "00000000"
+    },
+    
+    -- Disable Aero Shake - https://winaero.com/blog/disable-aero-shake-in-windows-10-windows-8-and-windows-7/
+    { path = "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced"
+    , name = "DisallowShaking"
+    , value = lib.windowsRegistry.RegistryValue.DWORD "00000001"
+    },
+
+    -- Disable start menu live tiles - https://winaero.com/blog/disable-live-tiles-all-at-once-in-windows-10-start-menu/
+    { path = "HKEY_CURRENT_USER\\SOFTWARE\\Policies\\Microsoft\\Windows\\CurrentVersion\\PushNotifications"
+    , name = "NoTileApplicationNotification"
+    , value = lib.windowsRegistry.RegistryValue.DWORD "00000001"
+    },
+
+    -- Hide people bar - https://winaero.com/blog/disable-people-windows-10-group-policy/
+    { path = "HKEY_CURRENT_USER\\Software\\Policies\\Microsoft\\Windows\\Explorer"
+    , name = "HidePeopleBar"
+    , value = lib.windowsRegistry.RegistryValue.DWORD "00000001"
+    }
+
+    -- TODO: add support for more registry key types
+    -- -- Set user scoped environment variables
+    -- { path = "HKEY_CURRENT_USER\\Environment"
+    -- , name = "GIT_GET_ROOT"
+    -- , type = "sz"
+    -- , value = "${context.user.profilePath}/wksp"
+    -- },
+    -- { path = "HKEY_CURRENT_USER\\Environment"
+    -- , name = "RUST_BACKTRACE"
+    -- , type = "sz"
+    -- , value = "${context.user.profilePath}/wksp"
+    -- }
+]
 
 let filesystem: List lib.types.FilesystemDecl = [
 
@@ -18,7 +69,7 @@ let filesystem: List lib.types.FilesystemDecl = [
       [user]
         email = s@m-h.ug
         name = Sam Hug
-      '',
+      ''
     },
 
     -- Generate a .reg file that we will import into the Windows Registry using an activation hook
@@ -26,63 +77,7 @@ let filesystem: List lib.types.FilesystemDecl = [
       ensure = lib.types.EnsureType.Present,
       path = "${context.storePath}",
       name = "registry.reg",
-      text = lib.windowsRegistry.makeRegistryFile [
-
-        -- Show driver letters before names - https://winaero.com/blog/show-drive-letters-before-drive-names-in-this-pc-computer-folder/ 
-        { path = "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer"
-        , name = "ShowDriveLettersFirst"
-        , type = "dword"
-        , value = "00000004"
-        },
-
-        -- Show hidden files
-        { path = "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced"
-        , name = "Hidden"
-        , type = "dword"
-        , value = "00000001"
-        },
-
-        -- Don't hide file extensions
-        { path = "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced"
-        , name = "HideFileExt"
-        , type = "dword"
-        , value = "00000000"
-        },
-        
-        -- Disable Aero Shake - https://winaero.com/blog/disable-aero-shake-in-windows-10-windows-8-and-windows-7/
-        { path = "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced"
-        , name = "DisallowShaking"
-        , type = "dword"
-        , value = "00000001"
-        },
-
-        -- Disable start menu live tiles - https://winaero.com/blog/disable-live-tiles-all-at-once-in-windows-10-start-menu/
-        { path = "HKEY_CURRENT_USER\\SOFTWARE\\Policies\\Microsoft\\Windows\\CurrentVersion\\PushNotifications"
-        , name = "NoTileApplicationNotification"
-        , type = "dword"
-        , value = "00000001"
-        },
-
-        -- Hide people bar - https://winaero.com/blog/disable-people-windows-10-group-policy/
-        { path = "HKEY_CURRENT_USER\\Software\\Policies\\Microsoft\\Windows\\Explorer"
-        , name = "HidePeopleBar"
-        , type = "dword"
-        , value = "00000001"
-        },
-
-        -- TODO: add support for more registry key types
-        -- -- Set user scoped environment variables
-        -- { path = "HKEY_CURRENT_USER\\Environment"
-        -- , name = "GIT_GET_ROOT"
-        -- , type = "sz"
-        -- , value = "${context.user.profilePath}/wksp"
-        -- },
-        -- { path = "HKEY_CURRENT_USER\\Environment"
-        -- , name = "RUST_BACKTRACE"
-        -- , type = "sz"
-        -- , value = "${context.user.profilePath}/wksp"
-        -- }
-      ]
+      text = lib.windowsRegistry.makeRegistryFile registryEntries
     },
 
     -- Example powershell script that we will execute with an activation hook
@@ -93,7 +88,7 @@ let filesystem: List lib.types.FilesystemDecl = [
       text =
         ''
         Write-Host 'Hello from powershell script'
-        '',
+        ''
     },
 
     -- Script to delete files in ~/Downloads that are older than 60 days
@@ -109,7 +104,7 @@ let filesystem: List lib.types.FilesystemDecl = [
         $CurrentDate = Get-Date
         $DatetoDelete = $CurrentDate.AddDays($Daysback)
         Get-ChildItem $Path | Where-Object { $_.LastWriteTime -lt $DatetoDelete } | Remove-Item -Recurse -Force -Confirm:$false
-        '',
+        ''
     },
 
     -- Windows Scheduled Task configuration to run our ~/Downloads cleanup script
@@ -163,8 +158,8 @@ let filesystem: List lib.types.FilesystemDecl = [
             </Exec>
           </Actions>
         </Task>
-        '',
-    },
+        ''
+    }
 
   ]
 
@@ -176,17 +171,17 @@ let filesystem: List lib.types.FilesystemDecl = [
       args = [
         "-File",
         "${context.storePath}/example-activation-hook.ps1"
-      ],
+      ]
     },
 
     -- Register scheduled task to cleanup ~/Downloads folder
     {
       command = "powershell.exe",
-      args = [ "-Command", "Register-ScheduledTask -TaskName 'Cleanup old Downloads' -Xml (get-content '${context.storePath}/scheduled_task-cleanup-downloads.xml' | out-string) -Force" ],
+      args = [ "-Command", "Register-ScheduledTask -TaskName 'Cleanup old Downloads' -Xml (get-content '${context.storePath}/scheduled_task-cleanup-downloads.xml' | out-string) -Force" ]
     },
 
     -- Activation hook to import our generated registry file
-    (lib.windowsRegistry.makeActivationHook "${context.storePath}/registry.reg"),
+    (lib.windowsRegistry.makeActivationHook "${context.storePath}/registry.reg")
 
   ]
 
