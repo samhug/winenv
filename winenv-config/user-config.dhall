@@ -110,25 +110,6 @@ let filesystem
                   <RunLevel>LeastPrivilege</RunLevel>
                 </Principal>
               </Principals>
-              <Settings>
-                <MultipleInstancesPolicy>IgnoreNew</MultipleInstancesPolicy>
-                <DisallowStartIfOnBatteries>true</DisallowStartIfOnBatteries>
-                <StopIfGoingOnBatteries>true</StopIfGoingOnBatteries>
-                <AllowHardTerminate>true</AllowHardTerminate>
-                <StartWhenAvailable>true</StartWhenAvailable>
-                <RunOnlyIfNetworkAvailable>false</RunOnlyIfNetworkAvailable>
-                <IdleSettings>
-                  <StopOnIdleEnd>true</StopOnIdleEnd>
-                  <RestartOnIdle>false</RestartOnIdle>
-                </IdleSettings>
-                <AllowStartOnDemand>true</AllowStartOnDemand>
-                <Enabled>true</Enabled>
-                <Hidden>false</Hidden>
-                <RunOnlyIfIdle>false</RunOnlyIfIdle>
-                <WakeToRun>false</WakeToRun>
-                <ExecutionTimeLimit>PT4H</ExecutionTimeLimit>
-                <Priority>7</Priority>
-              </Settings>
               <Actions Context="Author">
                 <Exec>
                   <Command>powershell.exe</Command>
