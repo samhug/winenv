@@ -11,33 +11,43 @@ let registryEntries
     = [ { path =
             "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer"
         , name = "ShowDriveLettersFirst"
-        , value = lib.windowsRegistry.RegistryValue.DWORD "00000004"
+        , value = lib.windowsRegistry.RegistryValue.DWORD 4
         }
       , { path =
             "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced"
         , name = "Hidden"
-        , value = lib.windowsRegistry.RegistryValue.DWORD "00000001"
+        , value = lib.windowsRegistry.RegistryValue.DWORD 1
         }
       , { path =
             "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced"
         , name = "HideFileExt"
-        , value = lib.windowsRegistry.RegistryValue.DWORD "00000000"
+        , value = lib.windowsRegistry.RegistryValue.DWORD 0
         }
       , { path =
             "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced"
         , name = "DisallowShaking"
-        , value = lib.windowsRegistry.RegistryValue.DWORD "00000001"
+        , value = lib.windowsRegistry.RegistryValue.DWORD 1
         }
       , { path =
             "HKEY_CURRENT_USER\\SOFTWARE\\Policies\\Microsoft\\Windows\\CurrentVersion\\PushNotifications"
         , name = "NoTileApplicationNotification"
-        , value = lib.windowsRegistry.RegistryValue.DWORD "00000001"
+        , value = lib.windowsRegistry.RegistryValue.DWORD 1
         }
       , { path =
             "HKEY_CURRENT_USER\\Software\\Policies\\Microsoft\\Windows\\Explorer"
         , name = "HidePeopleBar"
-        , value = lib.windowsRegistry.RegistryValue.DWORD "00000001"
+        , value = lib.windowsRegistry.RegistryValue.DWORD 1
         }
+
+        -- Set user scoped environment variables
+      , { path = "HKEY_CURRENT_USER\\Environment"
+        , name = "GIT_GET_ROOT"
+        , value = lib.windowsRegistry.RegistryValue.SZ "${context.user.profilePath}/wksp"
+        }
+      -- , { path = "HKEY_CURRENT_USER\\Environment"
+      --   , name = "RUST_BACKTRACE"
+      --   , value = lib.windowsRegistry.RegistryValue.SZ "1"
+      --   }
       ]
 
 let filesystem

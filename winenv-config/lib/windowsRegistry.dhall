@@ -6,7 +6,7 @@ let Prelude = ./prelude.dhall
 
 let RegistryValue
     : Type
-    = < DWORD : Text | QWORD : Text >
+    = < DWORD : Natural | QWORD : Natural | SZ : Text >
 
 let RegistryEntry
     : Type
@@ -14,11 +14,13 @@ let RegistryEntry
 
 let makeRegistryFile =
       λ(registryEntries : List RegistryEntry) →
+        -- TODO: properly escape values
         let renderValue =
               λ(value : RegistryValue) →
                 merge
-                  { DWORD = λ(value : Text) → "dword:${value}"
-                  , QWORD = λ(value : Text) → "qword:${value}"
+                  { DWORD = λ(value : Natural) → "dword:${Natural/show value}"
+                  , QWORD = λ(value : Natural) → "qword:${Natural/show value}"
+                  , SZ = λ(value : Text) → "\"${value}\""
                   }
                   value
 
@@ -47,14 +49,14 @@ let example0 =
             [ { path =
                   "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced"
               , name = "HideFileExt"
-              , value = RegistryValue.DWORD "00000000"
+              , value = RegistryValue.DWORD 2
               }
             ]
         ≡ ''
           Windows Registry Editor Version 5.00
 
           [HKEY_CURRENT_USER\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced]
-          "HideFileExt"=dword:00000000
+          "HideFileExt"=dword:2
           ''
 
 let example1 =

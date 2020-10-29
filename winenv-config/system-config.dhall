@@ -11,32 +11,32 @@ let registryEntries
     = [ { path =
             "HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Control\\TimeZoneInformation"
         , name = "RealTimeIsUniversal"
-        , value = lib.windowsRegistry.RegistryValue.DWORD "00000001"
+        , value = lib.windowsRegistry.RegistryValue.DWORD 1
         }
       , { path =
             "HKEY_LOCAL_MACHINE\\SOFTWARE\\Policies\\Microsoft\\Windows\\System"
         , name = "EnableActivityFeed"
-        , value = lib.windowsRegistry.RegistryValue.DWORD "00000000"
+        , value = lib.windowsRegistry.RegistryValue.DWORD 0
         }
       , { path =
             "HKEY_LOCAL_MACHINE\\SOFTWARE\\Policies\\Microsoft\\Windows\\System"
         , name = "DisableLogonBackgroundImage"
-        , value = lib.windowsRegistry.RegistryValue.DWORD "00000001"
+        , value = lib.windowsRegistry.RegistryValue.DWORD 1
         }
       , { path =
             "HKEY_LOCAL_MACHINE\\SOFTWARE\\Policies\\Microsoft\\Windows\\Windows Search"
         , name = "AllowCortana"
-        , value = lib.windowsRegistry.RegistryValue.DWORD "00000000"
+        , value = lib.windowsRegistry.RegistryValue.DWORD 0
         }
       , { path =
             "HKEY_LOCAL_MACHINE\\SOFTWARE\\Policies\\Microsoft\\Windows\\DataCollection"
         , name = "AllowTelemetry"
-        , value = lib.windowsRegistry.RegistryValue.DWORD "00000000"
+        , value = lib.windowsRegistry.RegistryValue.DWORD 0
         }
       , { path =
             "HKEY_LOCAL_MACHINE\\SOFTWARE\\Policies\\Microsoft\\Windows\\System"
         , name = "AllowClipboardHistory"
-        , value = lib.windowsRegistry.RegistryValue.DWORD "00000000"
+        , value = lib.windowsRegistry.RegistryValue.DWORD 0
         }
       ]
 
