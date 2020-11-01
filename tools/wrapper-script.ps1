@@ -12,7 +12,7 @@ $tempJSONFile = New-TemporaryFile
 trap { Remove-Item $tempJSONFile -Confirm:$false }
 
 # Render Dhall configuration to a JSON declaration
-$proc = Start-Process "$PSScriptRoot/dhall-to-json/dhall-to-json-x86_64.exe" @( `
+$proc = Start-Process "$PSScriptRoot/dhall-to-json/dhall-to-json.exe" @( `
         '--file', $config, `
         '--output', $tempJSONFile `
     ) -NoNewWindow -PassThru -Wait

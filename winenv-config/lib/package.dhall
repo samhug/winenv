@@ -1,6 +1,6 @@
-{ Prelude = ./prelude.dhall
-, chocolatey = ./chocolatey.dhall
-, hostsFile = ./hostsFile.dhall
+{ Chocolatey = ./Chocolatey/package.dhall
+, HostsFile = ./HostsFile/package.dhall
 , types = ./types.dhall
-, windowsRegistry = ./windowsRegistry.dhall
+, Registry = ./Registry/package.dhall
+, NetworkDrive = ./NetworkDrive/package.dhall
 }

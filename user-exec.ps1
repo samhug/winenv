@@ -21,7 +21,7 @@ trap { Remove-Item $tempJSONFile -Confirm:$false }
 
 
 # Translate the JSON file to Dhall
-$proc = Start-Process "$PSScriptRoot/tools/dhall-to-json/json-to-dhall-x86_64.exe" @(
+$proc = Start-Process "$PSScriptRoot/tools/dhall-to-json/json-to-dhall.exe" @(
     "--file", "$tempJSONFile",
     "--output", "$contextFile"
 ) -NoNewWindow -PassThru -Wait

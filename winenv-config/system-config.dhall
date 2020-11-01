@@ -7,36 +7,36 @@ let lib = ./lib/package.dhall
 let context = ./system-context.dhall
 
 let registryEntries
-    : List lib.windowsRegistry.RegistryEntry
+    : List lib.Registry.Entry
     = [ { path =
             "HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Control\\TimeZoneInformation"
         , name = "RealTimeIsUniversal"
-        , value = lib.windowsRegistry.RegistryValue.DWORD 1
+        , value = lib.Registry.Value.DWORD 1
         }
       , { path =
             "HKEY_LOCAL_MACHINE\\SOFTWARE\\Policies\\Microsoft\\Windows\\System"
         , name = "EnableActivityFeed"
-        , value = lib.windowsRegistry.RegistryValue.DWORD 0
+        , value = lib.Registry.Value.DWORD 0
         }
       , { path =
             "HKEY_LOCAL_MACHINE\\SOFTWARE\\Policies\\Microsoft\\Windows\\System"
         , name = "DisableLogonBackgroundImage"
-        , value = lib.windowsRegistry.RegistryValue.DWORD 1
+        , value = lib.Registry.Value.DWORD 1
         }
       , { path =
             "HKEY_LOCAL_MACHINE\\SOFTWARE\\Policies\\Microsoft\\Windows\\Windows Search"
         , name = "AllowCortana"
-        , value = lib.windowsRegistry.RegistryValue.DWORD 0
+        , value = lib.Registry.Value.DWORD 0
         }
       , { path =
             "HKEY_LOCAL_MACHINE\\SOFTWARE\\Policies\\Microsoft\\Windows\\DataCollection"
         , name = "AllowTelemetry"
-        , value = lib.windowsRegistry.RegistryValue.DWORD 0
+        , value = lib.Registry.Value.DWORD 0
         }
       , { path =
             "HKEY_LOCAL_MACHINE\\SOFTWARE\\Policies\\Microsoft\\Windows\\System"
         , name = "AllowClipboardHistory"
-        , value = lib.windowsRegistry.RegistryValue.DWORD 0
+        , value = lib.Registry.Value.DWORD 0
         }
       ]
 
@@ -46,15 +46,17 @@ let filesystem
         , path = "c:/windows/system32/drivers/etc"
         , name = "hosts"
         , text =
-            lib.hostsFile.makeHostsFile
-              [ { ip = "10.90.0.1", name = "workspace-home.snet.sa.m-h.ug" }
-              , { ip = "10.0.1.20", name = "bootstrap.snet.sa.m-h.ug" }
+            lib.HostsFile.mkHostsFile
+              [ { ip = "10.90.0.1"
+                , names = [ "workspace-home.snet.sa.m-h.ug" ]
+                }
+              , { ip = "10.0.1.20", names = [ "bootstrap.snet.sa.m-h.ug" ] }
               ]
         }
       , { ensure = lib.types.EnsureType.Present
         , path = "${context.storePath}"
         , name = "registry.reg"
-        , text = lib.windowsRegistry.makeRegistryFile registryEntries
+        , text = lib.Registry.mkRegistryFile registryEntries
         }
       , { ensure = lib.types.EnsureType.Present
         , path = "${context.storePath}"
@@ -68,7 +70,7 @@ let filesystem
         , path = "${context.storePath}"
         , name = "chocolatey-packages.config"
         , text =
-            lib.chocolatey.makeConfig
+            lib.Chocolatey.mkConfig
               [ "7zip"
               , "curl"
               , "git"
@@ -94,17 +96,16 @@ let filesystem
 let activationHooks
     : List lib.types.ActivationHookDecl
     = [ { command = "powershell.exe"
-        , args = [ "-File", "${context.storePath}/example-activation-hook.ps1" ]
+        , args = [ "-File", "${context.storePath}\\example-activation-hook.ps1" ]
         }
       , { command = "choco"
         , args =
           [ "install"
           , "--confirm"
-          , "${context.storePath}/chocolatey-packages.config"
+          , "${context.storePath}\\chocolatey-packages.config"
           ]
         }
-      , lib.windowsRegistry.makeActivationHook
-          "${context.storePath}/registry.reg"
+      , lib.Registry.mkActivationHook "${context.storePath}\\registry.reg"
       ]
 
 let declaration

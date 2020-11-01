@@ -6,48 +6,51 @@ let lib = ./lib/package.dhall
 
 let context = ./user-context.dhall
 
+let networkDrives
+    : List lib.NetworkDrive.NetworkDrive.Type
+    = [ lib.NetworkDrive.NetworkDrive::{
+        , letter = "w"
+        , remotePath = "\\\\workspace-home.snet.sa.m-h.ug\\shug"
+        }
+      ]
+
 let registryEntries
-    : List lib.windowsRegistry.RegistryEntry
+    : List lib.Registry.Entry
     = [ { path =
             "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer"
         , name = "ShowDriveLettersFirst"
-        , value = lib.windowsRegistry.RegistryValue.DWORD 4
+        , value = lib.Registry.Value.DWORD 4
         }
       , { path =
             "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced"
         , name = "Hidden"
-        , value = lib.windowsRegistry.RegistryValue.DWORD 1
+        , value = lib.Registry.Value.DWORD 1
         }
       , { path =
             "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced"
         , name = "HideFileExt"
-        , value = lib.windowsRegistry.RegistryValue.DWORD 0
+        , value = lib.Registry.Value.DWORD 0
         }
       , { path =
             "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced"
         , name = "DisallowShaking"
-        , value = lib.windowsRegistry.RegistryValue.DWORD 1
+        , value = lib.Registry.Value.DWORD 1
         }
       , { path =
             "HKEY_CURRENT_USER\\SOFTWARE\\Policies\\Microsoft\\Windows\\CurrentVersion\\PushNotifications"
         , name = "NoTileApplicationNotification"
-        , value = lib.windowsRegistry.RegistryValue.DWORD 1
+        , value = lib.Registry.Value.DWORD 1
         }
       , { path =
             "HKEY_CURRENT_USER\\Software\\Policies\\Microsoft\\Windows\\Explorer"
         , name = "HidePeopleBar"
-        , value = lib.windowsRegistry.RegistryValue.DWORD 1
+        , value = lib.Registry.Value.DWORD 1
         }
-
-        -- Set user scoped environment variables
       , { path = "HKEY_CURRENT_USER\\Environment"
         , name = "GIT_GET_ROOT"
-        , value = lib.windowsRegistry.RegistryValue.SZ "${context.user.profilePath}/wksp"
+        , value =
+            lib.Registry.Value.SZ "${context.user.profilePath}\\wksp"
         }
-      -- , { path = "HKEY_CURRENT_USER\\Environment"
-      --   , name = "RUST_BACKTRACE"
-      --   , value = lib.windowsRegistry.RegistryValue.SZ "1"
-      --   }
       ]
 
 let filesystem
@@ -65,7 +68,7 @@ let filesystem
       , { ensure = lib.types.EnsureType.Present
         , path = "${context.storePath}"
         , name = "registry.reg"
-        , text = lib.windowsRegistry.makeRegistryFile registryEntries
+        , text = lib.Registry.mkRegistryFile registryEntries
         }
       , { ensure = lib.types.EnsureType.Present
         , path = "${context.storePath}"
@@ -113,7 +116,7 @@ let filesystem
               <Actions Context="Author">
                 <Exec>
                   <Command>powershell.exe</Command>
-                  <Arguments>-File "${context.storePath}/cleanup-downloads.ps1"</Arguments>
+                  <Arguments>-File "${context.storePath}\\cleanup-downloads.ps1"</Arguments>
                 </Exec>
               </Actions>
             </Task>
@@ -124,16 +127,15 @@ let filesystem
 let activationHooks
     : List lib.types.ActivationHookDecl
     = [ { command = "powershell.exe"
-        , args = [ "-File", "${context.storePath}/example-activation-hook.ps1" ]
+        , args = [ "-File", "${context.storePath}\\example-activation-hook.ps1" ]
         }
       , { command = "powershell.exe"
         , args =
           [ "-Command"
-          , "Register-ScheduledTask -TaskName 'Cleanup old Downloads' -Xml (get-content '${context.storePath}/scheduled_task-cleanup-downloads.xml' | out-string) -Force"
+          , "Register-ScheduledTask -TaskPath '\\' -TaskName 'Cleanup old Downloads' -Xml (get-content '${context.storePath}\\scheduled_task-cleanup-downloads.xml' | out-string) -Force"
           ]
         }
-      , lib.windowsRegistry.makeActivationHook
-          "${context.storePath}/registry.reg"
+      , lib.Registry.mkActivationHook "${context.storePath}\\registry.reg"
       ]
 
 let declaration
