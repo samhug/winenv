@@ -19,9 +19,8 @@ fn main() {
     let cfg = match opts.config {
         Some(path) => {
             let reader = File::open(&path)
-                .map(|file| BufReader::new(file))
-                .expect(&format!("unable to read config file ({})", path));
-            parse_config(reader)
+                .unwrap_or_else(|_| panic!("unable to read config file ({})", path));
+            parse_config(BufReader::new(reader))
         }
         None => parse_config(stdin().lock()),
     }
@@ -42,7 +41,6 @@ fn parse_config(reader: impl Read) -> Result<config::Config, String> {
 }
 
 fn instantiate_config(cfg: &config::Config) -> Result<(), String> {
-
     // Instantiate filesystem declarations
     for fs_decl in &cfg.filesystem {
         println!(
