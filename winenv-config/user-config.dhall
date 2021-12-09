@@ -8,11 +8,12 @@ let context = ./user-context.dhall
 
 let networkDrives
     : List lib.NetworkDrive.NetworkDrive.Type
-    = [ lib.NetworkDrive.NetworkDrive::{
-        , letter = "w"
-        , remotePath = "\\\\workspace-home.snet.sa.m-h.ug\\shug"
-        }
-      ]
+    = [
+        -- lib.NetworkDrive.NetworkDrive::{
+        -- , letter = "w"
+        -- , remotePath = "\\\\wksp-home.snet.sa.m-h.ug\\shug"
+        -- }
+      ] : List lib.NetworkDrive.NetworkDrive.Type
 
 let registryEntries
     : List lib.Registry.Entry
