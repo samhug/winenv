@@ -9,11 +9,6 @@ let context = ./system-context.dhall
 let registryEntries
     : List lib.Registry.Entry
     = [ { path =
-            "HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Control\\TimeZoneInformation"
-        , name = "RealTimeIsUniversal"
-        , value = lib.Registry.Value.DWORD 1
-        }
-      , { path =
             "HKEY_LOCAL_MACHINE\\SOFTWARE\\Policies\\Microsoft\\Windows\\System"
         , name = "EnableActivityFeed"
         , value = lib.Registry.Value.DWORD 0
@@ -38,22 +33,16 @@ let registryEntries
         , name = "AllowClipboardHistory"
         , value = lib.Registry.Value.DWORD 0
         }
+      -- , { path =
+      --       "HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Control\\TimeZoneInformation"
+      --   , name = "RealTimeIsUniversal"
+      --   , value = lib.Registry.Value.DWORD 1
+      --   }
       ]
 
 let filesystem
     : List lib.types.FilesystemDecl
     = [ { ensure = lib.types.EnsureType.Present
-        , path = "c:/windows/system32/drivers/etc"
-        , name = "hosts"
-        , text =
-            lib.HostsFile.mkHostsFile
-              [ { ip = "10.90.0.1"
-                , names = [ "workspace-home.snet.sa.m-h.ug" ]
-                }
-              , { ip = "10.0.1.20", names = [ "bootstrap.snet.sa.m-h.ug" ] }
-              ]
-        }
-      , { ensure = lib.types.EnsureType.Present
         , path = "${context.storePath}"
         , name = "registry.reg"
         , text = lib.Registry.mkRegistryFile registryEntries
@@ -66,6 +55,17 @@ let filesystem
             Write-Host 'Hello from powershell script'
             ''
         }
+      -- , { ensure = lib.types.EnsureType.Present
+      --   , path = "c:/windows/system32/drivers/etc"
+      --   , name = "hosts"
+      --   , text =
+      --       lib.HostsFile.mkHostsFile
+      --         [ { ip = "10.90.0.1"
+      --           , names = [ "workspace-home.snet.sa.m-h.ug" ]
+      --           }
+      --         , { ip = "10.0.1.20", names = [ "bootstrap.snet.sa.m-h.ug" ] }
+      --         ]
+      --   }
       , { ensure = lib.types.EnsureType.Present
         , path = "${context.storePath}"
         , name = "chocolatey-packages.config"
