@@ -23,6 +23,11 @@ let registryEntries
         }
       , { path =
             "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced"
+        , name = "DisallowShaking"
+        , value = lib.Registry.Value.DWORD 1
+        }
+      , { path =
+            "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced"
         , name = "Hidden"
         , value = lib.Registry.Value.DWORD 1
         }
@@ -31,11 +36,14 @@ let registryEntries
         , name = "HideFileExt"
         , value = lib.Registry.Value.DWORD 0
         }
+
+        -- Don't include MS Edge browser tabs in the alt-tab switcher
       , { path =
             "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced"
-        , name = "DisallowShaking"
-        , value = lib.Registry.Value.DWORD 1
+        , name = "MultiTaskingAltTabFilter"
+        , value = lib.Registry.Value.DWORD 3
         }
+
       , { path =
             "HKEY_CURRENT_USER\\SOFTWARE\\Policies\\Microsoft\\Windows\\CurrentVersion\\PushNotifications"
         , name = "NoTileApplicationNotification"
